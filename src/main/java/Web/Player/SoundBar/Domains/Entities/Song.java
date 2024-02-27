@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,6 +38,7 @@ public class Song implements Serializable {
     private String title;
 
     @Column(name = "genre", length = 64)
+    @Enumerated(value = EnumType.STRING)
     private SongGenres genre;
 
     @Column(name = "url", columnDefinition = "TEXT")
