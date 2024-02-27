@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -39,7 +40,9 @@ public class UserRole implements Serializable {
     private UserRoles roleName;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinTable(name = "user_roles_users",
+            joinColumns = {@JoinColumn(name = "role_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> user;
 
     @Override
