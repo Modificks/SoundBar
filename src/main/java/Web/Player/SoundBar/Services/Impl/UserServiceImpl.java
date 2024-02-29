@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -43,6 +44,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User getUser(String email) {
+        return userRepo.findByEmail(email);
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return (List<User>) userRepo.findAll();
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(username);
 
@@ -55,7 +66,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 
-        user.getUserRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName().toString())));
+        user.getUserRoles().forEach(role ->
+                authorities.add(new SimpleGrantedAuthority(role.getRoleName().toString()))
+        );
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
