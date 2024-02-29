@@ -1,5 +1,6 @@
 package Web.Player.SoundBar.Domains.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,7 @@ public class UserRole implements Serializable {
     @Enumerated(value = EnumType.STRING)
     private UserRoles roleName;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles_users",
             joinColumns = {@JoinColumn(name = "role_id")},
