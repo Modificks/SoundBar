@@ -48,10 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //TODO: make right permissions for pages(be careful as sequence matters)
 
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**").permitAll();// all users can path this way
+        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/user/save").permitAll();// all users can path this way
 
         http.authorizeRequests().antMatchers(GET, "/api/user/**").hasAnyAuthority("USER");
-        http.authorizeRequests().antMatchers(POST, "/api/user/save/**").hasAnyAuthority("ARTIST");
+        http.authorizeRequests().antMatchers(POST, "/api/user/nesave/**").hasAnyAuthority("ARTIST");
 
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);

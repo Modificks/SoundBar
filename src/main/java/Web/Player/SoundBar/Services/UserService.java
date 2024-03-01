@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserService {
 
-    User savaUser(User user);
+    User savaUser(User user);    //TODO: rename this method
 
     UserRole saveRole(UserRole userRole);
 

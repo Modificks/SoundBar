@@ -1,7 +1,9 @@
 package Web.Player.SoundBar.APIs;
 
+import Web.Player.SoundBar.Domains.DTOs.UserDTO;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Domains.Entities.UserRole;
+import Web.Player.SoundBar.Domains.Mapper.UserMapper;
 import Web.Player.SoundBar.Services.Impl.RefreshTokenServiceImpl;
 import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +31,13 @@ public class UserController {
 
     private final RefreshTokenServiceImpl refreshTokenServiceImpl;
 
+    private final UserMapper userMapper;
+
     //TODO: manage apis and create User DTO
 
     @PostMapping("/user/save")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
-        return ResponseEntity.created(uri).body(userServiceImpl.savaUser(user));
+    public User registration (@RequestBody UserDTO userDto) {
+        return userServiceImpl.savaUser(userMapper.toEntity(userDto));
     }
 
     @PostMapping("/role/save")

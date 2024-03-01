@@ -2,6 +2,7 @@ package Web.Player.SoundBar.Services.Impl;
 
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Domains.Entities.UserRole;
+import Web.Player.SoundBar.Enums.UserRoles;
 import Web.Player.SoundBar.Repositories.RoleRepo;
 import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.UserService;
@@ -24,16 +25,23 @@ import java.util.Set;
 @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private final UserRepo userRepo;
-
     private final RoleRepo roleRepo;
+
+    private final UserRepo userRepo;
 
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public User savaUser(User user) {
         log.info("Saving new user {}", user.getEmail());
+
+        Set<UserRole> defaultRole = roleRepo.findByRoleName(UserRoles.USER);
+
+        user.setEmail(user.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setNickname(user.getNickname());
+        user.setUserRoles(defaultRole);
+
         return userRepo.save(user);
     }
 
