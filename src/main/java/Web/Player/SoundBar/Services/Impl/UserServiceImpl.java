@@ -33,16 +33,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User saveUser(User user) {
-        log.info("Saving new user {}", user.getEmail());
+        if (userRepo.findByEmail(user.getEmail()) != null && userRepo.findByNickname(user.getNickname()) != null) {
+            //TODO: make custom exception
+            throw new RuntimeException("This user is already exists");
+        } else {
+            Set<UserRole> defaultRole = roleRepo.findByRoleName(UserRoles.USER);
 
-        Set<UserRole> defaultRole = roleRepo.findByRoleName(UserRoles.USER);
+            user.setEmail(user.getEmail());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setNickname(user.getNickname());
+            user.setUserRoles(defaultRole);
 
-        user.setEmail(user.getEmail());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setNickname(user.getNickname());
-        user.setUserRoles(defaultRole);
-
-        return userRepo.save(user);
+            return userRepo.save(user);
+        }
     }
 
     @Override
