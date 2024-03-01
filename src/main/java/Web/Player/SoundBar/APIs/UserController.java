@@ -37,7 +37,7 @@ public class UserController {
 
     @PostMapping("/user/save")
     public User registration (@RequestBody UserDTO userDto) {
-        return userServiceImpl.savaUser(userMapper.toEntity(userDto));
+        return userServiceImpl.saveUser(userMapper.toEntity(userDto));
     }
 
     @PostMapping("/role/save")

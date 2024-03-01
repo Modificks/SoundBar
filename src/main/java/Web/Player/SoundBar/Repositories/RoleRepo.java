@@ -6,7 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Set;
 
-//TODO: implement this functionality
 @Repository
 public interface RoleRepo extends CrudRepository<UserRole, Long> {
 

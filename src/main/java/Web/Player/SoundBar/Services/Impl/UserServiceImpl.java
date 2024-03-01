@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User savaUser(User user) {
+    public User saveUser(User user) {
         log.info("Saving new user {}", user.getEmail());
 
         Set<UserRole> defaultRole = roleRepo.findByRoleName(UserRoles.USER);
