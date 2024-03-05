@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User saveUser(User user) {
-        if (userRepo.findByEmail(user.getEmail()) != null && userRepo.findByNickname(user.getNickname()) != null) {
+        if (userRepo.findByEmail(user.getEmail()) != null || userRepo.findByNickname(user.getNickname()) != null) {
             //TODO: make custom exception
             throw new RuntimeException("This user is already exists");
         } else {
@@ -67,13 +67,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(username);
-
+//TODO; delete commented lines
         if (user == null) {
-            log.error("User was not found");
+ //           log.error("User was not found");
             throw new UsernameNotFoundException("User was not found");
-        } else {
+        } /*else {
             log.info("User was found: {}", username);
-        }
+        }*/
 
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 
