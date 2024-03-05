@@ -1,5 +1,6 @@
 package Web.Player.SoundBar.Configs.SecurityConfig.Filters;
 
+import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,14 +30,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final AuthenticationManager authenticationManager;
 
+    private final JwtProperties jwtProperties;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-
-        log.info("Email is {}", email);
-        log.info("Password is {}", password);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(email, password);
 
@@ -47,30 +46,33 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
 
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        Algorithm algorithmForAccessToken = Algorithm.HMAC256(jwtProperties.getJwtAccessSecret().getBytes());
+        Algorithm algorithmForRefreshToken = Algorithm.HMAC256(jwtProperties.getJwtRefreshSecret().getBytes());
 
-        String access_token = JWT.create()
+        String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 5 * 60 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + ((long)jwtProperties.getAccessExpiration() * 1000)))
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
-                .sign(algorithm);
+                .sign(algorithmForAccessToken);
 
-        String refresh_token = JWT.create()
+        //TODO: Crete an algorithm to make refresh token just for one usage // Just suggestion and isn't mandatory now
+        String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 60 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + ((long)jwtProperties.getRefreshExpiration() * 1000)))
                 .withIssuer(request.getRequestURL().toString())
-                .sign(algorithm);
+                .sign(algorithmForRefreshToken);
 
         Map<String, String> tokens = new HashMap<>();
 
-        tokens.put("access_token", access_token);
-        tokens.put("refresh_token", refresh_token);
+        tokens.put("access_token", accessToken);
+        tokens.put("refresh_token", refreshToken);
 
         response.setContentType(APPLICATION_JSON_VALUE);
 
+        // Return expiration time in the response to follow auth conversions (Just suggestion)
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 }

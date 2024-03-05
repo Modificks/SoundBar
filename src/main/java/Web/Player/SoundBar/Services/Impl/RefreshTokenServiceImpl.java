@@ -1,5 +1,6 @@
 package Web.Player.SoundBar.Services.Impl;
 
+import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Services.RefreshTokenService;
 import com.auth0.jwt.JWT;
@@ -26,6 +27,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final UserServiceImpl userServiceImpl;
 
+    private final JwtProperties jwtProperties;
+
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
@@ -33,30 +36,30 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             try {
 
-                String refresh_token = authorizationHeader.substring("Bearer ".length());
+                String refreshToken = authorizationHeader.substring("Bearer ".length());
 
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                Algorithm algorithmForAccessToken = Algorithm.HMAC256(jwtProperties.getJwtRefreshSecret().getBytes());
 
-                JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                JWTVerifier verifier = JWT.require(algorithmForAccessToken).build();
+                DecodedJWT decodedJWT = verifier.verify(refreshToken);
 
                 String email = decodedJWT.getSubject();
 
                 User user = userServiceImpl.getUser(email);
 
-                String access_token = JWT.create()
+                String accessToken = JWT.create()
                         .withSubject(user.getEmail())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+                        .withExpiresAt(new Date(System.currentTimeMillis() + ((long)jwtProperties.getAccessExpiration() * 1000)))
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", user.getUserRoles().stream()
                                 .map(role -> role.getRoleName().name())
                                 .collect(Collectors.toList()))
-                        .sign(algorithm);
+                        .sign(algorithmForAccessToken);
 
                 Map<String, String> tokens = new HashMap<>();
 
-                tokens.put("access_token", access_token);
-                tokens.put("refresh_token", refresh_token);
+                tokens.put("access_token", accessToken);
+                tokens.put("refresh_token", refreshToken);
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType(APPLICATION_JSON_VALUE);
@@ -79,6 +82,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             }
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            // TODO: throw more specified exception
             throw new RuntimeException("refresh token is missing");
         }
     }
