@@ -38,9 +38,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
                 String refreshToken = authorizationHeader.substring("Bearer ".length());
 
-                Algorithm algorithmForAccessToken = Algorithm.HMAC256(jwtProperties.getJwtRefreshSecret().getBytes());
+                Algorithm algorithmForRefreshToken = Algorithm.HMAC256(jwtProperties.getJwtRefreshSecret().getBytes());
+                Algorithm algorithmForAccessToken = Algorithm.HMAC256(jwtProperties.getJwtAccessSecret().getBytes());
 
-                JWTVerifier verifier = JWT.require(algorithmForAccessToken).build();
+                JWTVerifier verifier = JWT.require(algorithmForRefreshToken).build();
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);
 
                 String email = decodedJWT.getSubject();
