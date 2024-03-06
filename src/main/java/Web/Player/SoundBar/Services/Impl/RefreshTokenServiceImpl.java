@@ -3,6 +3,7 @@ package Web.Player.SoundBar.Services.Impl;
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
 import Web.Player.SoundBar.Domains.Entities.RefreshToken;
 import Web.Player.SoundBar.Domains.Entities.User;
+import Web.Player.SoundBar.Formats.DateFormatter;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
 import Web.Player.SoundBar.Services.RefreshTokenService;
 import com.auth0.jwt.JWT;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,15 +57,20 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
                 User user = userServiceImpl.getUser(email);
 
+                Date accessTokenExpirationDate = new Date(System.currentTimeMillis() + ((long)jwtProperties.getAccessExpiration() * 1000));
+                Date refreshTokenExpirationDate = new Date(System.currentTimeMillis() + ((long)jwtProperties.getRefreshExpiration() * 1000));
+
                 String accessToken = JWT.create()
                         .withSubject(user.getEmail())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + ((long)jwtProperties.getAccessExpiration() * 1000)))
+                        .withExpiresAt(accessTokenExpirationDate)
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", user.getUserRoles().stream()
                                 .map(role -> role.getRoleName().name())
                                 .collect(Collectors.toList()))
                         .sign(algorithmForAccessToken);
 
+                String accessTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+                String refreshTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
                 RefreshToken refreshTokenEntity1 = new RefreshToken();
 
                 RefreshToken refreshTokenEntity = refreshTokenRepo.findByToken(refreshToken);
@@ -77,7 +85,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 Map<String, String> tokens = new HashMap<>();
 
                 tokens.put("access_token", accessToken);
+                tokens.put("access_token_expires", accessTokenExpirationTime);
                 tokens.put("refresh_token", refreshToken);
+                tokens.put("refresh_token_expires", refreshTokenExpirationTime);
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType(APPLICATION_JSON_VALUE);

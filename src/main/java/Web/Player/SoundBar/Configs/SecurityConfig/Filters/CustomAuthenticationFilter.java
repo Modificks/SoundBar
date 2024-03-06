@@ -2,6 +2,7 @@ package Web.Player.SoundBar.Configs.SecurityConfig.Filters;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
 import Web.Player.SoundBar.Domains.Entities.RefreshToken;
+import Web.Player.SoundBar.Formats.DateFormatter;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
 import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
 import com.auth0.jwt.JWT;
@@ -21,6 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,9 +62,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Algorithm algorithmForAccessToken = Algorithm.HMAC256(jwtProperties.getJwtAccessSecret().getBytes());
         Algorithm algorithmForRefreshToken = Algorithm.HMAC256(jwtProperties.getJwtRefreshSecret().getBytes());
 
+        Date accessTokenExpirationDate = new Date(System.currentTimeMillis() + ((long)jwtProperties.getAccessExpiration() * 1000));
+        Date refreshTokenExpirationDate = new Date(System.currentTimeMillis() + ((long)jwtProperties.getRefreshExpiration() * 1000));
+
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + ((long)jwtProperties.getAccessExpiration() * 1000)))
+                .withExpiresAt(accessTokenExpirationDate)
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles", user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
@@ -70,9 +76,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + ((long)jwtProperties.getRefreshExpiration() * 1000)))
+                .withExpiresAt(refreshTokenExpirationDate)
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithmForRefreshToken);
+
+        String accessTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+        String refreshTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
 
         RefreshToken refreshTokenEntity = new RefreshToken();
 
@@ -85,11 +94,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Map<String, String> tokens = new HashMap<>();
 
         tokens.put("access_token", accessToken);
+        tokens.put("access_token_expires", accessTokenExpirationTime);
         tokens.put("refresh_token", refreshToken);
+        tokens.put("refresh_token_expires", refreshTokenExpirationTime);
 
         response.setContentType(APPLICATION_JSON_VALUE);
 
-        //TODO: Return expiration time in the response to follow auth conversions (Just suggestion)
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 }
