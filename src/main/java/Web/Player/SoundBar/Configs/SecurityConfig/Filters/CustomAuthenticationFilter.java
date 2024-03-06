@@ -1,6 +1,9 @@
 package Web.Player.SoundBar.Configs.SecurityConfig.Filters;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
+import Web.Player.SoundBar.Domains.Entities.RefreshToken;
+import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
+import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +35,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final JwtProperties jwtProperties;
 
+    private final RefreshTokenRepo refreshTokenRepo;
+
+    private final UserServiceImpl userServiceImpl;
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String email = request.getParameter("email");
@@ -46,6 +53,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
 
+        String email = user.getUsername();
+        Web.Player.SoundBar.Domains.Entities.User userEntity = userServiceImpl.getUser(email);
+
         Algorithm algorithmForAccessToken = Algorithm.HMAC256(jwtProperties.getJwtAccessSecret().getBytes());
         Algorithm algorithmForRefreshToken = Algorithm.HMAC256(jwtProperties.getJwtRefreshSecret().getBytes());
 
@@ -58,12 +68,19 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                         .collect(Collectors.toList()))
                 .sign(algorithmForAccessToken);
 
-        //TODO: Crete an algorithm to make refresh token just for one usage // Just suggestion and isn't mandatory now
         String refreshToken = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + ((long)jwtProperties.getRefreshExpiration() * 1000)))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithmForRefreshToken);
+
+        RefreshToken refreshTokenEntity = new RefreshToken();
+
+        refreshTokenEntity.setToken(refreshToken);
+        refreshTokenEntity.setUsed(false);
+        refreshTokenEntity.setUser(userEntity);
+
+        refreshTokenRepo.save(refreshTokenEntity);
 
         Map<String, String> tokens = new HashMap<>();
 
@@ -72,7 +89,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         response.setContentType(APPLICATION_JSON_VALUE);
 
-        // Return expiration time in the response to follow auth conversions (Just suggestion)
+        //TODO: Return expiration time in the response to follow auth conversions (Just suggestion)
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 }

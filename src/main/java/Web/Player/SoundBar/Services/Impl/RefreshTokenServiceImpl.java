@@ -1,7 +1,9 @@
 package Web.Player.SoundBar.Services.Impl;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
+import Web.Player.SoundBar.Domains.Entities.RefreshToken;
 import Web.Player.SoundBar.Domains.Entities.User;
+import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
 import Web.Player.SoundBar.Services.RefreshTokenService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -10,6 +12,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,11 +26,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final UserServiceImpl userServiceImpl;
 
     private final JwtProperties jwtProperties;
+
+    private final RefreshTokenRepo refreshTokenRepo;
 
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -57,6 +63,17 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                                 .collect(Collectors.toList()))
                         .sign(algorithmForAccessToken);
 
+                RefreshToken refreshTokenEntity1 = new RefreshToken();
+
+                RefreshToken refreshTokenEntity = refreshTokenRepo.findByToken(refreshToken);
+                refreshTokenEntity.setUsed(true);
+
+                checkAndDeleteToken(refreshToken);
+
+                refreshTokenEntity1.setToken(refreshToken);
+                refreshTokenEntity1.setUser(user);
+                refreshTokenRepo.save(refreshTokenEntity1);
+
                 Map<String, String> tokens = new HashMap<>();
 
                 tokens.put("access_token", accessToken);
@@ -85,6 +102,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             // TODO: throw more specified exception
             throw new RuntimeException("refresh token is missing");
+        }
+    }
+
+    @Override
+    public void checkAndDeleteToken(String token) {
+        RefreshToken refreshToken = refreshTokenRepo.findByToken(token);
+
+        if (refreshToken.isUsed()) {
+            refreshTokenRepo.deleteByToken(token);
         }
     }
 }
