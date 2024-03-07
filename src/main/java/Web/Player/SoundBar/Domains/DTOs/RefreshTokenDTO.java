@@ -9,5 +9,5 @@ public class RefreshTokenDTO {
 
     private String token;
     private Boolean isUsed;
-    private UserAuthDTO user;
+    private UserDTO user;
 }
