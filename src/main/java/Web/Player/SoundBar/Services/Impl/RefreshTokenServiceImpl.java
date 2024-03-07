@@ -74,10 +74,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 RefreshToken refreshTokenEntity1 = new RefreshToken();
 
                 RefreshToken refreshTokenEntity = refreshTokenRepo.findByToken(refreshToken);
-                refreshTokenEntity.setUsed(true);
+                refreshTokenEntity.setIsUsed(Boolean.TRUE);
 
                 checkAndDeleteToken(refreshToken);
 
+                refreshTokenEntity1.setIsUsed(Boolean.FALSE);
                 refreshTokenEntity1.setToken(refreshToken);
                 refreshTokenEntity1.setUser(user);
                 refreshTokenRepo.save(refreshTokenEntity1);
@@ -119,7 +120,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public void checkAndDeleteToken(String token) {
         RefreshToken refreshToken = refreshTokenRepo.findByToken(token);
 
-        if (refreshToken.isUsed()) {
+        if (Boolean.TRUE.equals(refreshToken.getIsUsed())) {
             refreshTokenRepo.deleteByToken(token);
         }
     }

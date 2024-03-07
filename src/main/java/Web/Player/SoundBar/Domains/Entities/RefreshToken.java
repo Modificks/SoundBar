@@ -1,5 +1,6 @@
 package Web.Player.SoundBar.Domains.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +34,7 @@ public class RefreshToken implements Serializable {
     private String token;
 
     @Column(name = "is_used")
-    private boolean isUsed;
+    private Boolean isUsed;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -43,11 +44,11 @@ public class RefreshToken implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RefreshToken that)) return false;
-        return isUsed() == that.isUsed() && Objects.equals(getId(), that.getId()) && Objects.equals(getToken(), that.getToken());
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getToken(), that.getToken()) && Objects.equals(getIsUsed(), that.getIsUsed());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getToken(), isUsed());
+        return Objects.hash(getId(), getToken(), getIsUsed());
     }
 }

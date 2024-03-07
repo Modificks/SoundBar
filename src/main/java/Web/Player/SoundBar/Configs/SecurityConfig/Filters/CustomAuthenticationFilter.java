@@ -86,7 +86,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         RefreshToken refreshTokenEntity = new RefreshToken();
 
         refreshTokenEntity.setToken(refreshToken);
-        refreshTokenEntity.setUsed(false);
+        refreshTokenEntity.setIsUsed(Boolean.FALSE);
         refreshTokenEntity.setUser(userEntity);
 
         refreshTokenRepo.save(refreshTokenEntity);
