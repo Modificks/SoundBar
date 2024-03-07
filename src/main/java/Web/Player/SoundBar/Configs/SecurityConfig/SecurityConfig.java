@@ -2,6 +2,8 @@ package Web.Player.SoundBar.Configs.SecurityConfig;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.Filters.CustomAuthenticationFilter;
 import Web.Player.SoundBar.Configs.SecurityConfig.Filters.CustomAuthorizationFilter;
+import Web.Player.SoundBar.Domains.Mapper.RefreshTokenMapper;
+import Web.Player.SoundBar.Domains.Mapper.UserMapper;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
 import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserServiceImpl userServiceImpl;
 
+    private final UserMapper userMapper;
+
+    private final RefreshTokenMapper refreshTokenMapper;
+
 
     @Bean
     @Override
@@ -49,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter =
-                new CustomAuthenticationFilter(authenticationManagerBean(), jwtProperties, refreshTokenRepo, userServiceImpl);
+                new CustomAuthenticationFilter(authenticationManagerBean(), jwtProperties, refreshTokenRepo, userServiceImpl, userMapper, refreshTokenMapper);
 
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 

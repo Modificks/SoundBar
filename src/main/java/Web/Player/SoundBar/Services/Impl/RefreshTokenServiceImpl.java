@@ -1,8 +1,11 @@
 package Web.Player.SoundBar.Services.Impl;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
+import Web.Player.SoundBar.Domains.DTOs.RefreshTokenDTO;
 import Web.Player.SoundBar.Domains.Entities.RefreshToken;
 import Web.Player.SoundBar.Domains.Entities.User;
+import Web.Player.SoundBar.Domains.Mapper.RefreshTokenMapper;
+import Web.Player.SoundBar.Domains.Mapper.UserMapper;
 import Web.Player.SoundBar.Formats.DateFormatter;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
 import Web.Player.SoundBar.Services.RefreshTokenService;
@@ -14,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,7 +26,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -39,6 +40,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final JwtProperties jwtProperties;
 
     private final RefreshTokenRepo refreshTokenRepo;
+
+    private final UserMapper userMapper;
+
+    private final RefreshTokenMapper refreshTokenMapper;
 
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -76,17 +81,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 String refreshTokenExpirationTime =
                         DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
 
-                RefreshToken refreshTokenEntity1 = new RefreshToken();
-
-                RefreshToken refreshTokenEntity = refreshTokenRepo.findByToken(refreshToken);
-                refreshTokenEntity.setIsUsed(Boolean.TRUE);
-
-                checkAndDeleteToken(refreshToken);
-
-                refreshTokenEntity1.setIsUsed(Boolean.FALSE);
-                refreshTokenEntity1.setToken(refreshToken);
-                refreshTokenEntity1.setUser(user);
-                refreshTokenRepo.save(refreshTokenEntity1);
+                saveNewToken(refreshToken, user);
 
                 Map<String, String> tokens = new HashMap<>();
 
@@ -128,5 +123,21 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         if (Boolean.TRUE.equals(refreshToken.getIsUsed())) {
             refreshTokenRepo.deleteByToken(token);
         }
+    }
+
+    @Override
+    public void saveNewToken(String newRefreshToken, User user) {
+        RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO();
+
+        RefreshToken refreshTokenEntity = refreshTokenRepo.findByToken(newRefreshToken);
+        refreshTokenEntity.setIsUsed(Boolean.TRUE);
+
+        checkAndDeleteToken(newRefreshToken);
+
+        refreshTokenDTO.setIsUsed(Boolean.FALSE);
+        refreshTokenDTO.setToken(newRefreshToken);
+        refreshTokenDTO.setUser(userMapper.toDto(user));
+
+        refreshTokenRepo.save(refreshTokenMapper.toEntity(refreshTokenDTO));
     }
 }

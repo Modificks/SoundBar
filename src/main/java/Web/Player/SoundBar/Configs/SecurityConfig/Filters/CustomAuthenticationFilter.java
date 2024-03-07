@@ -1,7 +1,9 @@
 package Web.Player.SoundBar.Configs.SecurityConfig.Filters;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProperties;
-import Web.Player.SoundBar.Domains.Entities.RefreshToken;
+import Web.Player.SoundBar.Domains.DTOs.RefreshTokenDTO;
+import Web.Player.SoundBar.Domains.Mapper.RefreshTokenMapper;
+import Web.Player.SoundBar.Domains.Mapper.UserMapper;
 import Web.Player.SoundBar.Formats.DateFormatter;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
 import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
@@ -41,6 +43,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     private final RefreshTokenRepo refreshTokenRepo;
 
     private final UserServiceImpl userServiceImpl;
+
+    private final UserMapper userMapper;
+
+    private final RefreshTokenMapper refreshTokenMapper;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -90,13 +96,13 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String refreshTokenExpirationTime =
                 DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
 
-        RefreshToken refreshTokenEntity = new RefreshToken();
+        RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO();
 
-        refreshTokenEntity.setToken(refreshToken);
-        refreshTokenEntity.setIsUsed(Boolean.FALSE);
-        refreshTokenEntity.setUser(userEntity);
+        refreshTokenDTO.setToken(refreshToken);
+        refreshTokenDTO.setIsUsed(Boolean.FALSE);
+        refreshTokenDTO.setUser(userMapper.toDto(userEntity));
 
-        refreshTokenRepo.save(refreshTokenEntity);
+        refreshTokenRepo.save(refreshTokenMapper.toEntity(refreshTokenDTO));
 
         Map<String, String> tokens = new HashMap<>();
 
