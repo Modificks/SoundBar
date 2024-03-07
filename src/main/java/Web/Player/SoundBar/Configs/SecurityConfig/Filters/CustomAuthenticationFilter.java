@@ -47,14 +47,19 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(email, password);
 
         return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        User user = (User)authentication.getPrincipal();
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authentication) throws IOException, ServletException {
+
+        User user = (User) authentication.getPrincipal();
 
         String email = user.getUsername();
         Web.Player.SoundBar.Domains.Entities.User userEntity = userServiceImpl.getUser(email);
@@ -62,8 +67,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Algorithm algorithmForAccessToken = Algorithm.HMAC256(jwtProperties.getJwtAccessSecret().getBytes());
         Algorithm algorithmForRefreshToken = Algorithm.HMAC256(jwtProperties.getJwtRefreshSecret().getBytes());
 
-        Date accessTokenExpirationDate = new Date(System.currentTimeMillis() + ((long)jwtProperties.getAccessExpiration() * 1000));
-        Date refreshTokenExpirationDate = new Date(System.currentTimeMillis() + ((long)jwtProperties.getRefreshExpiration() * 1000));
+        Date accessTokenExpirationDate = new Date(System.currentTimeMillis() + ((long) jwtProperties.getAccessExpiration() * 1000));
+        Date refreshTokenExpirationDate = new Date(System.currentTimeMillis() + ((long) jwtProperties.getRefreshExpiration() * 1000));
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
@@ -80,8 +85,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithmForRefreshToken);
 
-        String accessTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
-        String refreshTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+        String accessTokenExpirationTime =
+                DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+        String refreshTokenExpirationTime =
+                DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
 
         RefreshToken refreshTokenEntity = new RefreshToken();
 

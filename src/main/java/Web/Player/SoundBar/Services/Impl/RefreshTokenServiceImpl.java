@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -69,8 +71,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                                 .collect(Collectors.toList()))
                         .sign(algorithmForAccessToken);
 
-                String accessTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
-                String refreshTokenExpirationTime = DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+                String accessTokenExpirationTime =
+                        DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+                String refreshTokenExpirationTime =
+                        DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+
                 RefreshToken refreshTokenEntity1 = new RefreshToken();
 
                 RefreshToken refreshTokenEntity = refreshTokenRepo.findByToken(refreshToken);

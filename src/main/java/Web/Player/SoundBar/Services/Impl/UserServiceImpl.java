@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,11 +48,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    public UserRole saveRole(UserRole userRole) {
-        log.info("Saving role {}", userRole.getRoleName());
-        return roleRepo.save(userRole);
-    }
+//    @Override
+//    public UserRole saveRole(UserRole userRole) {
+//        return roleRepo.save(userRole);
+//    }
 
     @Override
     public User getUser(String email) {
@@ -67,13 +66,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByEmail(username);
-//TODO; delete commented lines
         if (user == null) {
- //           log.error("User was not found");
             throw new UsernameNotFoundException("User was not found");
-        } /*else {
-            log.info("User was found: {}", username);
-        }*/
+        }
 
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 

@@ -48,7 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), jwtProperties, refreshTokenRepo, userServiceImpl);
+        CustomAuthenticationFilter customAuthenticationFilter =
+                new CustomAuthenticationFilter(authenticationManagerBean(), jwtProperties, refreshTokenRepo, userServiceImpl);
 
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 

@@ -1,6 +1,6 @@
 package Web.Player.SoundBar.APIs;
 
-import Web.Player.SoundBar.Domains.DTOs.UserDTO;
+import Web.Player.SoundBar.Domains.DTOs.UserAuthDTO;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Domains.Entities.UserRole;
 import Web.Player.SoundBar.Domains.Mapper.UserMapper;
@@ -33,18 +33,16 @@ public class UserController {
 
     private final UserMapper userMapper;
 
-    //TODO: manage apis and create User DTO
-
     @PostMapping("/user/save")
-    public User registration (@RequestBody UserDTO userDto) {
-        return userServiceImpl.saveUser(userMapper.toEntity(userDto));
+    public User registration(@RequestBody UserAuthDTO userAuthDTO) {
+        return userServiceImpl.saveUser(userMapper.toEntity(userAuthDTO));
     }
 
-    @PostMapping("/role/save")
-    public ResponseEntity<UserRole> saveRole(@RequestBody UserRole userRole) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
-        return ResponseEntity.created(uri).body(userServiceImpl.saveRole(userRole));
-    }
+//    @PostMapping("/role/save")
+//    public ResponseEntity<UserRole> saveRole(@RequestBody UserRole userRole) {
+//        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
+//        return ResponseEntity.created(uri).body(userServiceImpl.saveRole(userRole));
+//    }
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {

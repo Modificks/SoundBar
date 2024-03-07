@@ -67,24 +67,22 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
                     filterChain.doFilter(request, response);
 
-                    //TODO: delete commented lines
                 } catch (Exception exception) {
-                   // log.error("Error logging in: {}", exception.getMessage());
                     //TODO: handle scenario if smth is incorrect
 
-                if (!response.isCommitted()) {
-                    response.setHeader("error", exception.getMessage());
-                    response.setStatus(FORBIDDEN.value());
+                    if (!response.isCommitted()) {
+                        response.setHeader("error", exception.getMessage());
+                        response.setStatus(FORBIDDEN.value());
 
-                    Map<String, String> error = new HashMap<>();
+                        Map<String, String> error = new HashMap<>();
 
-                    error.put("error_message", exception.getMessage());
+                        error.put("error_message", exception.getMessage());
 
-                    response.setStatus(FORBIDDEN.value());
-                    response.setContentType(APPLICATION_JSON_VALUE);
+                        response.setStatus(FORBIDDEN.value());
+                        response.setContentType(APPLICATION_JSON_VALUE);
 
-                    new ObjectMapper().writeValue(response.getOutputStream(), error);
-                }
+                        new ObjectMapper().writeValue(response.getOutputStream(), error);
+                    }
                 }
 
             } else {

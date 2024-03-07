@@ -1,20 +1,15 @@
 package Web.Player.SoundBar.Domains.Mapper;
 
-import Web.Player.SoundBar.Domains.DTOs.UserDTO;
+import Web.Player.SoundBar.Domains.DTOs.UserAuthDTO;
 import Web.Player.SoundBar.Domains.Entities.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
-public interface UserMapper extends BaseMapper<User, UserDTO> {
+public interface UserMapper extends BaseMapper<User, UserAuthDTO> {
 
-    @Mapping(target = "id", source = "userDTO.id")
-    @Mapping(target = "email", source = "userDTO.email")
-    @Mapping(target = "nickname", source = "userDTO.nickname")
-    @Mapping(target = "password", source = "userDTO.password")
-    @Mapping(target = "userRoles", source = "userDTO.userRoles")
-    @Mapping(target = "playList", source = "userDTO.playList")
-    User toEntity(UserDTO userDTO);
+    @Named("toUserDto")
+    User toEntity(UserAuthDTO userAuthDTO);
 
-    UserDTO toDto(User user);
+    UserAuthDTO toDto(User user);
 }

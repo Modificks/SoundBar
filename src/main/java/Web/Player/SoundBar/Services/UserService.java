@@ -8,7 +8,7 @@ public interface UserService {
 
     User saveUser(User user);
 
-    UserRole saveRole(UserRole userRole);
+//    UserRole saveRole(UserRole userRole);
 
     User getUser(String email);
 

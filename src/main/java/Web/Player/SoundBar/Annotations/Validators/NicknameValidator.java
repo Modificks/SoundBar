@@ -14,13 +14,14 @@ public class NicknameValidator implements ConstraintValidator<Nickname, String> 
     }
 }
 /**
- *Valid nicks:
- *         Alex_1990
- *         Ірина-Київ
- *         Super$tar
- *         Василь№1
- *         Gamer!Pro
- *
- *Invalid nicks:
- *          All nicks with length > 38
+ * Valid nicks:
+ * Alex_1990
+ * Ірина-Київ
+ * Super$tar
+ * Василь№1
+ * Gamer!Pro
+ * <p>
+ * Invalid nicks:
+ * All nicks with length > 38
+ * Or specific symbols that were not mentions in REGEXP
  */
