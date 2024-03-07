@@ -36,6 +36,7 @@ public class RefreshToken implements Serializable {
     @Column(name = "is_used")
     private Boolean isUsed;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
