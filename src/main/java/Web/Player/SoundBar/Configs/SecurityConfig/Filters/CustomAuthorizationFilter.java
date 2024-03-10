@@ -28,15 +28,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RequiredArgsConstructor
-// TODO: use another type of filter to validate only requests which are covered by the security configs and should have authentication
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtProperties jwtProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // TODO: remove those routes from the Security configs and here
-        if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")) {
+        if (request.getServletPath().equals("/api/login") ||
+                request.getServletPath().equals("/api/token/refresh") ||
+                request.getServletPath().equals("/SoundBar/login") ||
+                request.getServletPath().equals("/SoundBar/player")) {
+
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
