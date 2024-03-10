@@ -77,9 +77,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                         .sign(algorithmForAccessToken);
 
                 String accessTokenExpirationTime =
-                        DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+                        DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.of("UTC")));
                 String refreshTokenExpirationTime =
-                        DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+                        DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.of("UTC")));
 
                 saveNewToken(refreshToken, user);
 

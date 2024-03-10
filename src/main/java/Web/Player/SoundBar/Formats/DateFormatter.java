@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class DateFormatter {
 
-    private static final String TIME_ZONE = "Europe/Kyiv";
+    private static final String TIME_ZONE = "UTC";
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

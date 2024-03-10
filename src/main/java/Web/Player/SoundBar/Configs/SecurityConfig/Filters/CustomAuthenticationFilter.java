@@ -92,9 +92,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .sign(algorithmForRefreshToken);
 
         String accessTokenExpirationTime =
-                DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+                DateFormatter.formatTime(LocalDateTime.ofInstant(accessTokenExpirationDate.toInstant(), ZoneId.of("UTC")));
         String refreshTokenExpirationTime =
-                DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.systemDefault()));
+                DateFormatter.formatTime(LocalDateTime.ofInstant(refreshTokenExpirationDate.toInstant(), ZoneId.of("UTC")));
 
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO();
 
