@@ -9,5 +9,5 @@ import java.util.Set;
 @Repository
 public interface RoleRepo extends CrudRepository<UserRole, Long> {
 
-    Set<UserRole> findByRoleName(UserRoles roleName);
+    UserRole findByRoleName(UserRoles roleName);
 }

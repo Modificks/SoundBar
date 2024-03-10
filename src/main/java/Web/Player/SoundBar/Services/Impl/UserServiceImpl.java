@@ -32,17 +32,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User saveUser(User user) {
+    public User saveUser(User user, boolean isArtist) {
         if (userRepo.findByEmail(user.getEmail()) != null || userRepo.findByNickname(user.getNickname()) != null) {
             //TODO: make custom exception
             throw new RuntimeException("This user is already exists");
         } else {
-            Set<UserRole> defaultRole = roleRepo.findByRoleName(UserRoles.USER);
+            Set<UserRole> defaultRoles = new HashSet<>();
+            defaultRoles.add(roleRepo.findByRoleName(UserRoles.USER));
+
+            if (isArtist) {
+                defaultRoles.add(roleRepo.findByRoleName(UserRoles.ARTIST));
+            }
 
             user.setEmail(user.getEmail());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setNickname(user.getNickname());
-            user.setUserRoles(defaultRole);
+            user.setUserRoles(defaultRoles);
 
             return userRepo.save(user);
         }

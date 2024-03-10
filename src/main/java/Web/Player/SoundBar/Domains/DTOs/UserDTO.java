@@ -15,15 +15,16 @@ public class UserDTO {
 
     private Long id;
 
-    @Email
+    @Email(message = "Invalid email")
     private String email;
 
-    @Nickname
+    @Nickname(message = "Invalid nickname")
     private String nickname;
 
     private String password;
     private Set<UserRole> userRoles;
     private Set<PlayList> playList;
     private RefreshToken refreshToken;
+    private Boolean isArtist;
 
 }

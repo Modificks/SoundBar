@@ -38,7 +38,7 @@ public class UserController {
 
     @PostMapping("/user/save")
     public User registration(@RequestBody @Valid UserDTO userDTO) {
-        return userServiceImpl.saveUser(userMapper.toEntity(userDTO), userDTO.isArtist());
+        return userServiceImpl.saveUser(userMapper.toEntity(userDTO), userDTO.getIsArtist());
     }
 
 //    @PostMapping("/role/save")
