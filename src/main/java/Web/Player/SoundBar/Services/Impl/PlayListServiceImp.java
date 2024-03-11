@@ -1,6 +1,7 @@
 package Web.Player.SoundBar.Services.Impl;
 
 import Web.Player.SoundBar.Domains.Entities.PlayList;
+import Web.Player.SoundBar.Exceptions.ObjectIsAlreadyExistException;
 import Web.Player.SoundBar.Repositories.PlayListRepo;
 import Web.Player.SoundBar.Services.PlayListService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,10 @@ public class PlayListServiceImp implements PlayListService {
 
     @Override
     public PlayList createPlayList(PlayList playList) {
+
+        if (playListRepo.findByNameAndUser(playList.getName(), playList.getUser()) != null) {
+            throw new ObjectIsAlreadyExistException("Play list with this name is already exists for this user");
+        }
 
         playList.setName(playList.getName());
 
