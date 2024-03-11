@@ -32,6 +32,9 @@ public class PlayList implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "name", length = 64)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

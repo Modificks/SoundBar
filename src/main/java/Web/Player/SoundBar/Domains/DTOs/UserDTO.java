@@ -23,7 +23,7 @@ public class UserDTO {
 
     private String password;
     private Set<UserRole> userRoles;
-    private Set<PlayList> playList;
+    private Set<PlayListDTO> playList;
     private RefreshToken refreshToken;
     private Boolean isArtist;
 
