@@ -61,19 +61,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 new CustomAuthenticationFilter(authenticationManagerBean(), jwtProperties, refreshTokenRepo, userServiceImpl, userMapper, refreshTokenMapper);
 
         customAuthenticationFilter.setFilterProcessesUrl("/SoundBar/login");
-//        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        //TODO: make right permissions for pages(be careful as sequence matters)
-
-//        http.authorizeRequests().antMatchers(/*"/api/login/**",*/ "/api/token/refresh/**", "/api/user/save", "/SoundBar/registration").permitAll();// all users can path this way
-//
-//        http.authorizeRequests().antMatchers(GET, "/api/user/**", "/SoundBar/player").hasAnyAuthority("USER");
-//        http.authorizeRequests().antMatchers(POST, "/api/user/nesave/**").hasAnyAuthority("ARTIST");
-
-        http.authorizeRequests().antMatchers("/SoundBar", "/SoundBar/login", "/SoundBar/registration").permitAll();// all users can path this way
+        http.authorizeRequests().antMatchers("/SoundBar", "/SoundBar/login", "/SoundBar/registration", "/SoundBar/player/refresh").permitAll();
 
         http.authorizeRequests().antMatchers(GET, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");

@@ -33,10 +33,13 @@ public class UserController {
     public void login() {
     }
 
-    @GetMapping("/player")
-    public void getPlayer(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @GetMapping("/player/refresh")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         refreshTokenServiceImpl.refreshToken(request, response);
     }
+
+    @GetMapping("/player")
+    public void getPlayer() {}
 
     @PostMapping("/registration")
     public User registerUser(@Valid @RequestBody UserDTO userDTO) {
