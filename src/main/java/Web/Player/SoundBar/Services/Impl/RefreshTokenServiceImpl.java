@@ -6,6 +6,7 @@ import Web.Player.SoundBar.Domains.Entities.RefreshToken;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Domains.Mapper.RefreshTokenMapper;
 import Web.Player.SoundBar.Domains.Mapper.UserMapper;
+import Web.Player.SoundBar.Exceptions.TokenMissingException;
 import Web.Player.SoundBar.Formats.DateFormatter;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
 import Web.Player.SoundBar.Services.RefreshTokenService;
@@ -96,7 +97,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
             } catch (Exception exception) {
-                //TODO: handle scenario if smth is incorrect
 
                 response.setHeader("error", exception.getMessage());
                 response.setStatus(FORBIDDEN.value());
@@ -111,8 +111,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             }
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            // TODO: throw more specified exception
-            throw new RuntimeException("refresh token is missing");
+            throw new TokenMissingException("refresh token is missing");
         }
     }
 

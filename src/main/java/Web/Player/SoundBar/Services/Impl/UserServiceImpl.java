@@ -3,6 +3,7 @@ package Web.Player.SoundBar.Services.Impl;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Domains.Entities.UserRole;
 import Web.Player.SoundBar.Enums.UserRoles;
+import Web.Player.SoundBar.Exceptions.UserAlreadyExistException;
 import Web.Player.SoundBar.Repositories.RoleRepo;
 import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.UserService;
@@ -34,8 +35,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User saveUser(User user, boolean isArtist) {
         if (userRepo.findByEmail(user.getEmail()) != null || userRepo.findByNickname(user.getNickname()) != null) {
-            //TODO: make custom exception
-            throw new RuntimeException("This user is already exists");
+            throw new UserAlreadyExistException("This user is already exists");
         } else {
             Set<UserRole> defaultRoles = new HashSet<>();
             defaultRoles.add(roleRepo.findByRoleName(UserRoles.USER));

@@ -68,7 +68,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     filterChain.doFilter(request, response);
 
                 } catch (Exception exception) {
-                    //TODO: handle scenario if smth is incorrect
 
                     if (!response.isCommitted()) {
                         response.setHeader("error", exception.getMessage());

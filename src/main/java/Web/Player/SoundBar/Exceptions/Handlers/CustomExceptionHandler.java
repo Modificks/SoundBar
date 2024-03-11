@@ -1,5 +1,7 @@
 package Web.Player.SoundBar.Exceptions.Handlers;
 
+import Web.Player.SoundBar.Exceptions.TokenMissingException;
+import Web.Player.SoundBar.Exceptions.UserAlreadyExistException;
 import Web.Player.SoundBar.Formats.ResponseError;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -24,5 +26,17 @@ public class CustomExceptionHandler {
         }
 
         return new ResponseError(errorMessage.toString(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseError handleConflictException(UserAlreadyExistException ex) {
+        return new ResponseError(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TokenMissingException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseError handleMissingTokenException(TokenMissingException ex) {
+        return new ResponseError(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }
