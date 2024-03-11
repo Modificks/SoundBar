@@ -1,27 +1,28 @@
 package Web.Player.SoundBar.Exceptions.Handlers;
 
+import Web.Player.SoundBar.Formats.ResponseError;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError handleValidationExceptions(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
 
-        Map<String, String> errors = new HashMap<>();
+        StringBuilder errorMessage = new StringBuilder();
 
         for (FieldError error : result.getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
+            errorMessage.append(error.getDefaultMessage()).append("; ");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+
+        return new ResponseError(errorMessage.toString(), HttpStatus.BAD_REQUEST);
     }
 }
