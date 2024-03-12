@@ -5,4 +5,6 @@ import Web.Player.SoundBar.Domains.Entities.PlayList;
 public interface PlayListService {
 
     PlayList createPlayList(PlayList playList);
+
+    void deletePlayList(PlayList playList);
 }

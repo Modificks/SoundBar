@@ -69,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests().antMatchers(GET, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
 
         http.authorizeRequests().antMatchers(GET, "SoundBar/artist/**").hasAnyAuthority("ARTIST");
         http.authorizeRequests().antMatchers(POST, "SoundBar/artist/**").hasAnyAuthority("ARTIST");

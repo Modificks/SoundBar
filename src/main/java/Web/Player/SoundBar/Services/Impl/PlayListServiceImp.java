@@ -26,4 +26,17 @@ public class PlayListServiceImp implements PlayListService {
 
         return playListRepo.save(playList);
     }
+
+    @Override
+    public void deletePlayList(PlayList playList) {
+        PlayList existingPlayList = playListRepo.findByNameAndUser(playList.getName(), playList.getUser());
+
+        if (existingPlayList == null) {
+            throw new ObjectIsAlreadyExistException("There is no play list with such name");
+        }
+
+        existingPlayList.getPlayListsMusic().clear();
+
+        playListRepo.delete(existingPlayList);
+    }
 }

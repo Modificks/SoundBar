@@ -11,6 +11,7 @@ import Web.Player.SoundBar.Services.Impl.RefreshTokenServiceImpl;
 import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,9 +55,14 @@ public class UserController {
         return userServiceImpl.saveUser(userMapper.toEntity(userDTO), userDTO.getIsArtist());
     }
 
-    @PostMapping("/create_play_list")
+    @PostMapping("/player/create_play_list")
     public PlayList createPlayList(@RequestBody PlayListDTO playListDTO){
         return playListServiceImp.createPlayList(playListMapper.toEntity(playListDTO));
+    }
+
+    @DeleteMapping("/player/delete_play_list")
+    public void deletePlayList(@RequestBody PlayListDTO playListDTO){
+        playListServiceImp.deletePlayList(playListMapper.toEntity(playListDTO));
     }
 }
 /**
