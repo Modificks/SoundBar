@@ -1,10 +1,9 @@
 package Web.Player.SoundBar.APIs.UserController;
 
 import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
-import Web.Player.SoundBar.Domains.DTOs.UserDTO;
+import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserRegistrationDTO;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 import Web.Player.SoundBar.Domains.Entities.User;
-import Web.Player.SoundBar.Domains.Mapper.PlayListMapper;
 import Web.Player.SoundBar.Domains.Mapper.UserMapper;
 import Web.Player.SoundBar.Services.Impl.PlayListServiceImp;
 import Web.Player.SoundBar.Services.Impl.RefreshTokenServiceImpl;
@@ -34,8 +33,6 @@ public class UserController {
 
     private final UserMapper userMapper;
 
-    private final PlayListMapper playListMapper;
-
     private final RefreshTokenServiceImpl refreshTokenServiceImpl;
 
     @GetMapping("/login")
@@ -51,18 +48,18 @@ public class UserController {
     public void getPlayer() {}
 
     @PostMapping("/registration")
-    public User registerUser(@Valid @RequestBody UserDTO userDTO) {
-        return userServiceImpl.saveUser(userMapper.toEntity(userDTO), userDTO.getIsArtist());
+    public User registerUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
+        return userServiceImpl.saveUser(userMapper.toEntity(userRegistrationDTO), userRegistrationDTO.getIsArtist());
     }
 
     @PostMapping("/player/create_play_list")
     public PlayList createPlayList(@RequestBody PlayListDTO playListDTO){
-        return playListServiceImp.createPlayList(playListMapper.toEntity(playListDTO));
+        return playListServiceImp.createPlayList(playListDTO);
     }
 
     @DeleteMapping("/player/delete_play_list")
     public void deletePlayList(@RequestBody PlayListDTO playListDTO){
-        playListServiceImp.deletePlayList(playListMapper.toEntity(playListDTO));
+        playListServiceImp.deletePlayList(playListDTO);
     }
 }
 /**

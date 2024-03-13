@@ -1,10 +1,11 @@
 package Web.Player.SoundBar.Services;
 
+import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 
 public interface PlayListService {
 
-    PlayList createPlayList(PlayList playList);
+    PlayList createPlayList(PlayListDTO playListDTO);
 
-    void deletePlayList(PlayList playList);
+    void deletePlayList(PlayListDTO playListDTO);
 }

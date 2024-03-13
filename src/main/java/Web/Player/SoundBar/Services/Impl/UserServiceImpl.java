@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -53,19 +52,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-//    @Override
-//    public UserRole saveRole(UserRole userRole) {
-//        return roleRepo.save(userRole);
-//    }
-
     @Override
     public User getUser(String email) {
         return userRepo.findByEmail(email);
-    }
-
-    @Override
-    public List<User> getUsers() {
-        return (List<User>) userRepo.findAll();
     }
 
     @Override
