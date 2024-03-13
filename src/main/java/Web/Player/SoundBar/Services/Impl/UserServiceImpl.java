@@ -1,9 +1,11 @@
 package Web.Player.SoundBar.Services.Impl;
 
+import Web.Player.SoundBar.Domains.Entities.Artist;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Domains.Entities.UserRole;
 import Web.Player.SoundBar.Enums.UserRoles;
 import Web.Player.SoundBar.Exceptions.ObjectIsAlreadyExistException;
+import Web.Player.SoundBar.Repositories.ArtistRepo;
 import Web.Player.SoundBar.Repositories.RoleRepo;
 import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.UserService;
@@ -29,6 +31,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepo userRepo;
 
+    private final ArtistRepo artistRepo;
+
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -41,6 +45,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
             if (isArtist) {
                 defaultRoles.add(roleRepo.findByRoleName(UserRoles.ARTIST));
+
+                Artist artist = new Artist();
+                artist.setNickname(user.getNickname());
+                artistRepo.save(artist);
             }
 
             user.setEmail(user.getEmail());
