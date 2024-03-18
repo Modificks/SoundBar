@@ -8,4 +8,8 @@ public interface PlayListService {
     PlayList createPlayList(PlayListDTO playListDTO);
 
     void deletePlayList(PlayListDTO playListDTO);
+
+    void removeSongFromPlayList(Long playListId, Long songId);
+
+    void addSongToPlayList(Long playListId, Long songId);
 }

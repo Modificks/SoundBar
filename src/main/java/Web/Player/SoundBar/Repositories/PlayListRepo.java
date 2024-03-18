@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface PlayListRepo extends CrudRepository<PlayList, Long> {
 
     PlayList findByNameAndUser(String playListName, User user);
+
+    PlayList findPlayListById(Long playListId);
 }

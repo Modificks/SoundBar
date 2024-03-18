@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.DELETE;
 
@@ -70,6 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(GET, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
         http.authorizeRequests().antMatchers(POST, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
         http.authorizeRequests().antMatchers(DELETE, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(PATCH, "/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN");
 
         http.authorizeRequests().antMatchers(GET, "SoundBar/artist/**").hasAnyAuthority("ARTIST");
         http.authorizeRequests().antMatchers(POST, "SoundBar/artist/**").hasAnyAuthority("ARTIST");
