@@ -1,5 +1,6 @@
 package Web.Player.SoundBar.Domains.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,7 @@ public class Artist implements Serializable {
     private String nickname;
 
     @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY)
+    @JsonBackReference
     private Set<Song> song;
 
     @Override

@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ArtistRepo extends CrudRepository<Artist, Long> {
 
+    Artist findArtistById(Long artistId);
 }
