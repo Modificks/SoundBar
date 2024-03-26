@@ -1,6 +1,24 @@
 package Web.Player.SoundBar.Enums;
 
-//TODO: insert values
 public enum SongGenres {
-    ROCK
+    ROCK,
+    ALTERNATIVE,
+    ROMANTIC,
+    CLUB,
+    FREE_STYLE,
+    VOCAL,
+    ELECTRO,
+    PHONK,
+    HIP_HOP,
+    RAP,
+    TRAP,
+    BALADAS,
+    DISCO,
+    MODERN,
+    METAL,
+    LOVE_SONG,
+    JAZZ,
+    COUNTRY,
+    POP,
+    TRADITIONAL
 }
