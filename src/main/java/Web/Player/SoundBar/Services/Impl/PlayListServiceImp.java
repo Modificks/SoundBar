@@ -11,9 +11,11 @@ import Web.Player.SoundBar.Repositories.SongRepo;
 import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.PlayListService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -89,5 +91,15 @@ public class PlayListServiceImp implements PlayListService {
             playList.getPlayListsMusic().add(song);
             playListRepo.save(playList);
         }
+    }
+
+    @Override
+    public List<PlayList> getAllPlayLists() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepo.findByEmail(username);
+        Long userId = user.getId();
+        return playListRepo.findAllByUserId(userId);
     }
 }

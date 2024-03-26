@@ -8,4 +8,6 @@ import java.util.List;
 public interface SongService {
 
     List<Song> addSong(List<SongBaseDTO> listOfSongBaseDTO, List<MultipartFile> multipartFiles);
+
+    List<Song> getAllSongs();
 }

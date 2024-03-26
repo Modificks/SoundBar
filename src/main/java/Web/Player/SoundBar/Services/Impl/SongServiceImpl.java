@@ -78,4 +78,9 @@ public class SongServiceImpl implements SongService {
             songRepo.delete(song);
         }
     }
+
+    @Override
+    public List<Song> getAllSongs() {
+        return songRepo.findAll();
+    }
 }
