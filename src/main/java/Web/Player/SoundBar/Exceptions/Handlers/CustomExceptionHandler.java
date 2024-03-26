@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import javax.persistence.EntityNotFoundException;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
@@ -38,5 +39,11 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseError handleMissingTokenException(TokenMissingException ex) {
         return new ResponseError(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError handleMissingObjectException(EntityNotFoundException ex) {
+        return new ResponseError(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

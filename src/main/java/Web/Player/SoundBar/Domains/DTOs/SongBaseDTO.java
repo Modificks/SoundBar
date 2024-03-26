@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class SongBaseDTO {
 
+    private Long id;
     private String title;
     private SongGenres genre;
     private String url;

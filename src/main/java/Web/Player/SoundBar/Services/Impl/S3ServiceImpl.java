@@ -4,6 +4,7 @@ import Web.Player.SoundBar.Configs.AwsConfig.AwsS3Properties;
 import Web.Player.SoundBar.Services.S3Service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -91,5 +92,10 @@ public class S3ServiceImpl implements S3Service {
         }
 
         return urls;
+    }
+
+    public void deleteFileFromS3Bucket(String fileUrl) {
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        amazonS3.deleteObject(new DeleteObjectRequest(awsS3Properties.getBucketName(), fileName));
     }
 }
