@@ -2,6 +2,7 @@ package Web.Player.SoundBar.Services;
 
 import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
+import java.util.List;
 
 public interface PlayListService {
 
@@ -12,4 +13,6 @@ public interface PlayListService {
     void removeSongFromPlayList(Long playListId, Long songId);
 
     void addSongToPlayList(Long playListId, Long songId);
+
+    List<PlayList> getAllPlayLists();
 }
