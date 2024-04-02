@@ -1,6 +1,7 @@
 package Web.Player.SoundBar.APIs.ArtistController;
 
 import Web.Player.SoundBar.Domains.DTOs.SongBaseDTO;
+import Web.Player.SoundBar.Domains.DTOs.SongDTO;
 import Web.Player.SoundBar.Domains.Entities.Song;
 import Web.Player.SoundBar.Services.Impl.SongServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,13 @@ public class ArtistController {
     public void getSalary() {}
 
     @PostMapping(value = "/upload-song", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<Song> uploadSong(@RequestPart(value = "songBaseDTO") List<SongBaseDTO> songBaseDTO,
+    public List<Song> uploadSong(@RequestPart(value = "songBaseDTO") List<SongDTO> songBaseDTO,
                                  @RequestPart(value = "file") List<MultipartFile> files) {
         return songServiceImpl.addSong(songBaseDTO, files);
     }
 
     @DeleteMapping("/delete-song")
     public void deleteFile(@RequestBody SongBaseDTO songBaseDTO) {
-        songServiceImpl. deleteSong(songBaseDTO);
+        songServiceImpl.deleteSong(songBaseDTO);
     }
 }

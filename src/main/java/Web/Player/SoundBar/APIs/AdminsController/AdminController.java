@@ -13,13 +13,13 @@ public class AdminController {
     @GetMapping("/users")
     public void getUsers() {}
 
-    @PatchMapping("update_role")
+    @PatchMapping("update-role")
     public void changeRole() {}
 
-    @DeleteMapping("/delete_song")
+    @DeleteMapping("/delete-song")
     public void deleteSong() {}
 
-    @DeleteMapping("/delete_user")
+    @DeleteMapping("/delete-user")
     public void deleteUser() {}
 }
 
