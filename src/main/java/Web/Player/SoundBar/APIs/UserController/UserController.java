@@ -33,7 +33,7 @@ public class UserController {
         return playerPageDTO;
     }
 
-    @PostMapping("/create_play_list")
+    @PostMapping("/create-play-list")
     public PlayList createPlayList(@RequestBody PlayListDTO playListDTO) {
         return playListServiceImp.createPlayList(playListDTO);
     }
@@ -44,13 +44,13 @@ public class UserController {
         playListServiceImp.removeSongFromPlayList(playListId, songId);
     }
 
-    @PatchMapping("/player/add-song-to-playList")
+    @PatchMapping("/add-song-to-playList")
     public void addSongToPlayList(@RequestParam("playListId") Long playListId,
                                   @RequestParam("songId") Long songId) {
         playListServiceImp.addSongToPlayList(playListId, songId);
     }
 
-    @DeleteMapping("/player/delete-play-list")
+    @DeleteMapping("/delete-play-list")
     public void deletePlayList(@RequestBody PlayListDTO playListDTO) {
         playListServiceImp.deletePlayList(playListDTO);
     }

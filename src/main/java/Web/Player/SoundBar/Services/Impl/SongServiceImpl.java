@@ -1,6 +1,7 @@
 package Web.Player.SoundBar.Services.Impl;
 
 import Web.Player.SoundBar.Domains.DTOs.SongBaseDTO;
+import Web.Player.SoundBar.Domains.DTOs.SongDTO;
 import Web.Player.SoundBar.Domains.Entities.Artist;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 import Web.Player.SoundBar.Domains.Entities.Song;
@@ -33,12 +34,14 @@ public class SongServiceImpl implements SongService {
     private final SongMapper songMapper;
 
     @Override
-    public List<Song> addSong(List<SongBaseDTO> listOfSongBaseDTO, List<MultipartFile> multipartFiles) {
+    public List<Song> addSong(List<SongDTO> listOfSongBaseDTO, List<MultipartFile> multipartFiles) {
         List<String> urls = s3ServiceImpl.uploadFiles(multipartFiles);
 
         List<Song> songs = new ArrayList<>();
+
         for (int i = 0; i < listOfSongBaseDTO.size(); i++) {
-            SongBaseDTO songBaseDTO = listOfSongBaseDTO.get(i);
+
+            SongDTO songBaseDTO = listOfSongBaseDTO.get(i);
             String url = urls.get(i);
             String title = multipartFiles.get(i).getOriginalFilename().replace(".mp3", "");
 
@@ -48,6 +51,7 @@ public class SongServiceImpl implements SongService {
             song.setTitle(title);
             song.setUrl(url);
             song.setArtist(artist);
+            song.setGenre(songBaseDTO.getGenre());
             songs.add(song);
         }
 
