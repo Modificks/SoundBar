@@ -6,11 +6,15 @@ import Web.Player.SoundBar.Domains.Entities.Artist;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 import Web.Player.SoundBar.Domains.Entities.Song;
 import Web.Player.SoundBar.Domains.Mapper.SongMapper;
+import Web.Player.SoundBar.Domains.SongPage;
+import Web.Player.SoundBar.Domains.SongSearchCriteria;
 import Web.Player.SoundBar.Repositories.ArtistRepo;
+import Web.Player.SoundBar.Repositories.Criterias.SongCriteriaRepo;
 import Web.Player.SoundBar.Repositories.PlayListRepo;
 import Web.Player.SoundBar.Repositories.SongRepo;
 import Web.Player.SoundBar.Services.SongService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
@@ -30,6 +34,8 @@ public class SongServiceImpl implements SongService {
     private final ArtistRepo artistRepo;
 
     private final PlayListRepo playListRepo;
+
+    private final SongCriteriaRepo songCriteriaRepo;
 
     private final SongMapper songMapper;
 
@@ -86,5 +92,9 @@ public class SongServiceImpl implements SongService {
     @Override
     public List<Song> getAllSongs() {
         return songRepo.findAll();
+    }
+
+    public Page<Song> getSongs(SongPage songPage, SongSearchCriteria songSearchCriteria) {
+        return songCriteriaRepo.findAllWithFilters(songPage, songSearchCriteria);
     }
 }
