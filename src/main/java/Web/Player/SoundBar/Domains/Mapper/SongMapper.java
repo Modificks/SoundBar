@@ -1,6 +1,6 @@
 package Web.Player.SoundBar.Domains.Mapper;
 
-import Web.Player.SoundBar.Domains.DTOs.SongBaseDTO;
+import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongBaseDTO;
 import Web.Player.SoundBar.Domains.Entities.Song;
 import org.mapstruct.Mapper;
 import org.mapstruct.Named;

@@ -1,5 +1,6 @@
-package Web.Player.SoundBar.Domains.DTOs;
+package Web.Player.SoundBar.Domains.DTOs.SongDTOs;
 
+import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
 import Web.Player.SoundBar.Enums.SongGenres;
 import lombok.Getter;
 import lombok.Setter;
