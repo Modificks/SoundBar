@@ -1,7 +1,7 @@
 package Web.Player.SoundBar.APIs.ArtistController;
 
-import Web.Player.SoundBar.Domains.DTOs.SongBaseDTO;
-import Web.Player.SoundBar.Domains.DTOs.SongDTO;
+import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongBaseDTO;
+import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongDTO;
 import Web.Player.SoundBar.Domains.Entities.Song;
 import Web.Player.SoundBar.Services.Impl.SongServiceImpl;
 import lombok.RequiredArgsConstructor;

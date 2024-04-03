@@ -1,5 +1,6 @@
 package Web.Player.SoundBar.Domains.DTOs;
 
+import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongDTO;
 import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserBaseDTO;
 import lombok.Getter;
 import lombok.Setter;

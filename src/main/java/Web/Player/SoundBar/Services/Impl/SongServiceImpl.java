@@ -1,13 +1,13 @@
 package Web.Player.SoundBar.Services.Impl;
 
-import Web.Player.SoundBar.Domains.DTOs.SongBaseDTO;
-import Web.Player.SoundBar.Domains.DTOs.SongDTO;
+import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongBaseDTO;
+import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongDTO;
 import Web.Player.SoundBar.Domains.Entities.Artist;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 import Web.Player.SoundBar.Domains.Entities.Song;
 import Web.Player.SoundBar.Domains.Mapper.SongMapper;
-import Web.Player.SoundBar.Domains.SongPage;
-import Web.Player.SoundBar.Domains.SongSearchCriteria;
+import Web.Player.SoundBar.Domains.Criterias.SongPage;
+import Web.Player.SoundBar.Domains.Criterias.SongSearchCriteria;
 import Web.Player.SoundBar.Repositories.ArtistRepo;
 import Web.Player.SoundBar.Repositories.Criterias.SongCriteriaRepo;
 import Web.Player.SoundBar.Repositories.PlayListRepo;
@@ -94,6 +94,7 @@ public class SongServiceImpl implements SongService {
         return songRepo.findAll();
     }
 
+    @Override
     public Page<Song> getSongs(SongPage songPage, SongSearchCriteria songSearchCriteria) {
         return songCriteriaRepo.findAllWithFilters(songPage, songSearchCriteria);
     }

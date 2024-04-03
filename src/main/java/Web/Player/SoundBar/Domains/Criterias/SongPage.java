@@ -1,4 +1,4 @@
-package Web.Player.SoundBar.Domains;
+package Web.Player.SoundBar.Domains.Criterias;
 
 import lombok.Getter;
 import lombok.Setter;

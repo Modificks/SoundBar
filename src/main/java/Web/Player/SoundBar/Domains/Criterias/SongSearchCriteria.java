@@ -1,4 +1,4 @@
-package Web.Player.SoundBar.Domains;
+package Web.Player.SoundBar.Domains.Criterias;
 
 import Web.Player.SoundBar.Enums.SongGenres;
 import lombok.Getter;

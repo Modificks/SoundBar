@@ -1,8 +1,8 @@
 package Web.Player.SoundBar.Repositories.Criterias;
 
 import Web.Player.SoundBar.Domains.Entities.Song;
-import Web.Player.SoundBar.Domains.SongPage;
-import Web.Player.SoundBar.Domains.SongSearchCriteria;
+import Web.Player.SoundBar.Domains.Criterias.SongPage;
+import Web.Player.SoundBar.Domains.Criterias.SongSearchCriteria;
 import Web.Player.SoundBar.Enums.SongGenres;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
