@@ -3,6 +3,8 @@ package Web.Player.SoundBar.APIs.UserController;
 import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
 import Web.Player.SoundBar.Domains.DTOs.PlayerPageDTO;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
+import Web.Player.SoundBar.Domains.SongPage;
+import Web.Player.SoundBar.Domains.SongSearchCriteria;
 import Web.Player.SoundBar.Services.Impl.PlayListServiceImp;
 import Web.Player.SoundBar.Services.Impl.SongServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,15 @@ public class UserController {
         playerPageDTO.setSongs(songServiceImpl.getAllSongs());
         return playerPageDTO;
     }
+
+    @GetMapping("/filter")
+    public PlayerPageDTO filter(SongPage songPage, SongSearchCriteria songSearchCriteria) {
+        PlayerPageDTO playerPageDTO = new PlayerPageDTO();
+
+        playerPageDTO.setSongPage(songServiceImpl.getSongs(songPage, songSearchCriteria));
+        return playerPageDTO;
+    }
+
 
     @PostMapping("/create-play-list")
     public PlayList createPlayList(@RequestBody PlayListDTO playListDTO) {
