@@ -33,23 +33,23 @@ public class SongCriteriaRepo {
 
     public Page<Song> findAllWithFilters(SongPage songPage, SongSearchCriteria songSearchCriteria) {
 
-        CriteriaQuery<Song> cq = criteriaBuilder.createQuery(Song.class);
-        Root<Song> songRoot = cq.from(Song.class);
+        CriteriaQuery<Song> criteriaQuery = criteriaBuilder.createQuery(Song.class);
+        Root<Song> songRoot = criteriaQuery.from(Song.class);
 
         Predicate predicate = getPredicate(songSearchCriteria, songRoot);
-        cq.where(predicate);
+        criteriaQuery.where(predicate);
         
-        setOrder(songPage, cq, songRoot);
+        setOrder(songPage, criteriaQuery, songRoot);
 
-        TypedQuery<Song> tq = entityManager.createQuery(cq);
-        tq.setFirstResult(songPage.getPageNumber() * songPage.getPageSize());
-        tq.setMaxResults(songPage.getPageSize());
+        TypedQuery<Song> typedQuery = entityManager.createQuery(criteriaQuery);
+        typedQuery.setFirstResult(songPage.getPageNumber() * songPage.getPageSize());
+        typedQuery.setMaxResults(songPage.getPageSize());
 
         Pageable pageable = getPageable(songPage);
 
         long songCount = getSongCount(predicate);
 
-        return new PageImpl<>(tq.getResultList(), pageable, songCount);
+        return new PageImpl<>(typedQuery.getResultList(), pageable, songCount);
 
     }
 
@@ -83,12 +83,12 @@ public class SongCriteriaRepo {
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
-    private void setOrder(SongPage songPage, CriteriaQuery<Song> cq, Root<Song> songRoot) {
+    private void setOrder(SongPage songPage, CriteriaQuery<Song> criteriaQuery, Root<Song> songRoot) {
 
         if (songPage.getSortDirection().equals(Sort.Direction.ASC)) {
-            cq.orderBy(criteriaBuilder.asc(songRoot.get(songPage.getSortBy())));
+            criteriaQuery.orderBy(criteriaBuilder.asc(songRoot.get(songPage.getSortBy())));
         } else {
-            cq.orderBy(criteriaBuilder.desc(songRoot.get(songPage.getSortBy())));
+            criteriaQuery.orderBy(criteriaBuilder.desc(songRoot.get(songPage.getSortBy())));
         }
     }
 
