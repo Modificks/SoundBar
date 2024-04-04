@@ -27,23 +27,18 @@ public class UserController {
     private final SongServiceImpl songServiceImpl;
 
     @GetMapping
-    public PlayerPageDTO getPlayerPage() {
+    public PlayerPageDTO getPlayerPage(SongPage songPage, SongSearchCriteria songSearchCriteria) {
         PlayerPageDTO playerPageDTO = new PlayerPageDTO();
 
-        playerPageDTO.setPlayLists(playListServiceImp.getAllPlayLists());
-        playerPageDTO.setSongs(songServiceImpl.getAllSongs());
+        if (songPage == null && songSearchCriteria == null) {
+            playerPageDTO.setPlayLists(playListServiceImp.getAllPlayLists());
+            playerPageDTO.setSongs(songServiceImpl.getAllSongs());
+        } else {
+            playerPageDTO.setSongPage(songServiceImpl.getSongs(songPage, songSearchCriteria));
+        }
 
         return playerPageDTO;
     }
-
-    @GetMapping("/filter")
-    public PlayerPageDTO filter(SongPage songPage, SongSearchCriteria songSearchCriteria) {
-        PlayerPageDTO playerPageDTO = new PlayerPageDTO();
-
-        playerPageDTO.setSongPage(songServiceImpl.getSongs(songPage, songSearchCriteria));
-        return playerPageDTO;
-    }
-
 
     @PostMapping("/create-play-list")
     public PlayList createPlayList(@RequestBody PlayListDTO playListDTO) {
