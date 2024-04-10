@@ -1,0 +1,4 @@
+ALTER TABLE IF EXISTS artists
+    ADD COLUMN user_id BIGINT NOT NULL;
+
+ALTER TABLE IF EXISTS artists ADD CONSTRAINT artists_user_fk FOREIGN KEY (user_id) REFERENCES users;

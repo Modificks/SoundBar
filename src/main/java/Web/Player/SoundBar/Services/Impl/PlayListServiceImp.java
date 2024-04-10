@@ -1,6 +1,6 @@
 package Web.Player.SoundBar.Services.Impl;
 
-import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
+import Web.Player.SoundBar.Domains.DTOs.PlayListDTOs.PlayListDTO;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 import Web.Player.SoundBar.Domains.Entities.Song;
 import Web.Player.SoundBar.Domains.Entities.User;

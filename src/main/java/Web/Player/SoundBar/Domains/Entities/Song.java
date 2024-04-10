@@ -1,7 +1,7 @@
 package Web.Player.SoundBar.Domains.Entities;
 
 import Web.Player.SoundBar.Enums.SongGenres;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,7 +47,7 @@ public class Song implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "artist_id")
-    @JsonManagedReference
+    @JsonIgnore
     private Artist artist;
 
     @ManyToMany(mappedBy = "playListsMusic", fetch = FetchType.LAZY)

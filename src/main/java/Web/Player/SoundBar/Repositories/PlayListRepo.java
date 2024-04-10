@@ -5,6 +5,7 @@ import Web.Player.SoundBar.Domains.Entities.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface PlayListRepo extends CrudRepository<PlayList, Long> {
@@ -13,7 +14,9 @@ public interface PlayListRepo extends CrudRepository<PlayList, Long> {
 
     PlayList findPlayListById(Long playListId);
 
-    List<PlayList> findAll();
+    Set<PlayList> findAll();
+
+    Set<PlayList> findByUserId(Long userId);
 
     List<PlayList> findAllByUserId(Long userId);
 }

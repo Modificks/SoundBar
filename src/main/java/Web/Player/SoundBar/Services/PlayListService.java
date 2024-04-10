@@ -1,6 +1,6 @@
 package Web.Player.SoundBar.Services;
 
-import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
+import Web.Player.SoundBar.Domains.DTOs.PlayListDTOs.PlayListDTO;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 import java.util.List;
 
