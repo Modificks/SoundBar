@@ -1,6 +1,6 @@
 package Web.Player.SoundBar.Domains.DTOs.UserDTOs;
 
-import Web.Player.SoundBar.Domains.DTOs.PlayListDTO;
+import Web.Player.SoundBar.Domains.DTOs.PlayListDTOs.PlayListDTO;
 import Web.Player.SoundBar.Domains.DTOs.RefreshTokenDTO;
 import Web.Player.SoundBar.Domains.Entities.UserRole;
 import lombok.Getter;

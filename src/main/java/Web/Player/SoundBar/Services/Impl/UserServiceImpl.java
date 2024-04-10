@@ -1,11 +1,18 @@
 package Web.Player.SoundBar.Services.Impl;
 
+import Web.Player.SoundBar.Domains.DTOs.PlayListDTOs.PlayListBaseDTO;
+import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserBaseDTO;
+import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserFindDTO;
 import Web.Player.SoundBar.Domains.Entities.Artist;
+import Web.Player.SoundBar.Domains.Entities.PlayList;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Domains.Entities.UserRole;
+import Web.Player.SoundBar.Domains.Mapper.PlayListMapper;
+import Web.Player.SoundBar.Domains.Mapper.UserMapper;
 import Web.Player.SoundBar.Enums.UserRoles;
 import Web.Player.SoundBar.Exceptions.ObjectIsAlreadyExistException;
 import Web.Player.SoundBar.Repositories.ArtistRepo;
+import Web.Player.SoundBar.Repositories.PlayListRepo;
 import Web.Player.SoundBar.Repositories.RoleRepo;
 import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.UserService;
@@ -20,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,36 +41,113 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final ArtistRepo artistRepo;
 
+    private final PlayListRepo playListRepo;
+
     private final PasswordEncoder passwordEncoder;
+
+    private final UserMapper userMapper;
+
+    private final PlayListMapper playListMapper;
 
     @Override
     public User saveUser(User user, boolean isArtist) {
         if (userRepo.findByEmail(user.getEmail()) != null || userRepo.findByNickname(user.getNickname()) != null) {
-            throw new ObjectIsAlreadyExistException("This user is already exists");
+            throw new ObjectIsAlreadyExistException("This user already exists");
         } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setEmail(user.getEmail());
+            user.setNickname(user.getNickname());
+
             Set<UserRole> defaultRoles = new HashSet<>();
             defaultRoles.add(roleRepo.findByRoleName(UserRoles.USER));
+            user.setUserRoles(defaultRoles);
+
+            User savedUser = userRepo.save(user);
 
             if (isArtist) {
                 defaultRoles.add(roleRepo.findByRoleName(UserRoles.ARTIST));
 
                 Artist artist = new Artist();
+
                 artist.setNickname(user.getNickname());
+                artist.setUser(savedUser);
                 artistRepo.save(artist);
             }
 
-            user.setEmail(user.getEmail());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setNickname(user.getNickname());
-            user.setUserRoles(defaultRoles);
-
-            return userRepo.save(user);
+            return savedUser;
         }
     }
 
     @Override
     public User getUser(String email) {
         return userRepo.findByEmail(email);
+    }
+
+    @Override
+    public Set<UserFindDTO> getAllUsers() {
+        Set<User> users = userRepo.findAll();
+        Set<UserFindDTO> userDTOS = new HashSet<>();
+
+        users.forEach(user -> {
+            Set<PlayList> playLists = playListRepo.findByUserId(user.getId());
+            Set<PlayListBaseDTO> playListDTOs = playLists.stream()
+                    .map(playListMapper::toBaseDto)
+                    .collect(Collectors.toSet());
+
+            UserFindDTO userFindDTO = userMapper.toFindDto(user);
+            userFindDTO.setPlayList(playListDTOs);
+
+            userDTOS.add(userFindDTO);
+        });
+
+        return userDTOS;
+    }
+
+    public void changeUserRole(Long userId, Long roleId, boolean addRole) {
+        User user = userRepo.findUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        UserRole roleEntity = roleRepo.findRoleById(roleId);
+        if (roleEntity == null) {
+            throw new RuntimeException("Role not found");
+        }
+
+        Set<UserRole> userRoles = user.getUserRoles();
+
+        if (addRole) {
+            if (userRoles.contains(roleEntity)) {
+                throw new RuntimeException("User already has this role");
+            }
+            userRoles.add(roleEntity);
+        } else {
+            if (!userRoles.contains(roleEntity)) {
+                throw new RuntimeException("User does not have this role");
+            }
+            userRoles.remove(roleEntity);
+        }
+
+        user.setUserRoles(userRoles);
+        userRepo.save(user);
+    }
+
+    @Override
+    public void deleteUser(UserBaseDTO userBaseDTO) {
+        User user = userMapper.toEntity(userBaseDTO);
+        Set<PlayList> playLists = playListRepo.findByUserId(user.getId());
+
+        playLists.forEach(playList -> {
+            playList.getPlayListsMusic().clear();
+            playListRepo.save(playList);
+        });
+
+        if (user.getUserRoles() != null) {
+            user.getUserRoles().clear();
+            userRepo.save(user);
+        }
+
+        userRepo.deleteById(user.getId());
     }
 
     @Override

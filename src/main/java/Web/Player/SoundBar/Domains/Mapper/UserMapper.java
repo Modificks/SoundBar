@@ -2,6 +2,7 @@ package Web.Player.SoundBar.Domains.Mapper;
 
 import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserBaseDTO;
 import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserDTO;
+import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserFindDTO;
 import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserRegistrationDTO;
 import Web.Player.SoundBar.Domains.Entities.User;
 import org.mapstruct.Mapper;
@@ -17,4 +18,8 @@ public interface UserMapper extends BaseMapper<User, UserBaseDTO> {
     @Mapping(target = "playList", ignore = true)
     @Mapping(target = "refreshToken", ignore = true)
     UserDTO toDto(User user);
+
+    @Mapping(target = "playList", ignore = true)
+    UserFindDTO toFindDto(User user);
+
 }

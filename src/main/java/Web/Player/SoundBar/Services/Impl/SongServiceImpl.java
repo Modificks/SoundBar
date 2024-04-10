@@ -66,7 +66,7 @@ public class SongServiceImpl implements SongService {
 
     public void deleteSong(SongBaseDTO songBaseDTO) {
         Song song = songRepo.findSongById(songBaseDTO.getId());
-        List<PlayList> playLists = playListRepo.findAll();
+        Set<PlayList> playLists = playListRepo.findAll();
 
         if (song == null) {
             throw new EntityNotFoundException("Can not find this song");
