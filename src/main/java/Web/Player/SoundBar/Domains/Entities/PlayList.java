@@ -45,6 +45,7 @@ public class PlayList implements Serializable {
     @JoinTable(name = "play_lists_music",
             joinColumns = {@JoinColumn(name = "play_list_id")},
             inverseJoinColumns = {@JoinColumn(name = "song_id")})
+    @JsonIgnore
     private Set<Song> playListsMusic;
 
     @Override

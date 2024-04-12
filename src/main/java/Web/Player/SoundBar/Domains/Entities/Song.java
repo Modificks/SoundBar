@@ -53,15 +53,18 @@ public class Song implements Serializable {
     @ManyToMany(mappedBy = "playListsMusic", fetch = FetchType.LAZY)
     private Set<PlayList> playListsMusic;
 
+    @Column(name = "listen_count")
+    private Long listenCount;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Song song)) return false;
-        return Objects.equals(getId(), song.getId()) && Objects.equals(getTitle(), song.getTitle()) && getGenre() == song.getGenre() && Objects.equals(getUrl(), song.getUrl());
+        return Objects.equals(getId(), song.getId()) && Objects.equals(getTitle(), song.getTitle()) && getGenre() == song.getGenre() && Objects.equals(getUrl(), song.getUrl()) && Objects.equals(getListenCount(), song.getListenCount());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getTitle(), getGenre(), getUrl());
+        return Objects.hash(getId(), getTitle(), getGenre(), getUrl(), getListenCount());
     }
 }

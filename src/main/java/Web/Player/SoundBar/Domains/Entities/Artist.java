@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 
@@ -44,15 +45,18 @@ public class Artist implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @Column(name = "salary")
+    private BigDecimal salary;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Artist artist)) return false;
-        return Objects.equals(getId(), artist.getId()) && Objects.equals(getNickname(), artist.getNickname());
+        return Objects.equals(getId(), artist.getId()) && Objects.equals(getNickname(), artist.getNickname()) && Objects.equals(getSalary(), artist.getSalary());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getNickname());
+        return Objects.hash(getId(), getNickname(), getSalary());
     }
 }
