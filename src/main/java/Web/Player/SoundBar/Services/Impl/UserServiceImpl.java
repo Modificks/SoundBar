@@ -14,17 +14,21 @@ import Web.Player.SoundBar.Exceptions.ObjectIsAlreadyExistException;
 import Web.Player.SoundBar.Repositories.ArtistRepo;
 import Web.Player.SoundBar.Repositories.PlayListRepo;
 import Web.Player.SoundBar.Repositories.RoleRepo;
+import Web.Player.SoundBar.Repositories.SongRepo;
 import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,6 +39,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
+    private static final BigDecimal COEFFICIENT = BigDecimal.valueOf(0.2);
+
     private final RoleRepo roleRepo;
 
     private final UserRepo userRepo;
@@ -42,6 +48,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final ArtistRepo artistRepo;
 
     private final PlayListRepo playListRepo;
+
+    private final SongRepo songRepo;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -71,6 +79,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
                 artist.setNickname(user.getNickname());
                 artist.setUser(savedUser);
+                artist.setSalary(BigDecimal.valueOf(0));
                 artistRepo.save(artist);
             }
 
@@ -148,6 +157,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         userRepo.deleteById(user.getId());
+    }
+
+    //Salary is count by formula: (total amount of listens) / 2 - 20%
+    @Override
+    public BigDecimal getSalary(Long artistId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepo.findByEmail(username);
+
+        if (user.getArtist().getId().equals(artistId)) {
+            Artist artist = artistRepo.findArtistById(artistId);
+
+            Long listening = songRepo.findTotalAmountOfListens(artist);
+
+            BigDecimal listeningAsBigDecimal = BigDecimal.valueOf(listening);
+            BigDecimal totalAmountInDollars = listeningAsBigDecimal.divide(BigDecimal.valueOf(2));
+            BigDecimal salary = totalAmountInDollars.subtract(COEFFICIENT);
+
+            artist.setSalary(salary);
+
+            return salary;
+        } else {
+            throw new RuntimeException("You can not see this info");
+        }
     }
 
     @Override

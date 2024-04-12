@@ -3,6 +3,7 @@ package Web.Player.SoundBar.Services;
 import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserBaseDTO;
 import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserFindDTO;
 import Web.Player.SoundBar.Domains.Entities.User;
+import java.math.BigDecimal;
 import java.util.Set;
 
 public interface UserService {
@@ -17,4 +18,5 @@ public interface UserService {
 
     void deleteUser(UserBaseDTO userBaseDTO);
 
+    BigDecimal getSalary(Long artistId);
 }

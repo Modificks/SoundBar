@@ -1,0 +1,5 @@
+ALTER TABLE IF EXISTS songs
+ADD COLUMN listen_count BIGINT;
+
+ALTER TABLE IF EXISTS artists
+    ADD COLUMN salary NUMERIC(19, 2);
