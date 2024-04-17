@@ -10,4 +10,6 @@ public interface RefreshTokenRepo extends CrudRepository<RefreshToken, Long> {
     void deleteByToken(String token);
 
     RefreshToken findByToken(String token);
+
+    void deleteAllByUserEmail(String id);
 }

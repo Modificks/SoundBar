@@ -36,11 +36,9 @@ public class ArtistController {
         return songServiceImpl.getSongStatistic(artistId);
     }
 
-    @GetMapping("/salary/{id}")
-    public BigDecimal getSalary(@PathVariable String id) {
-        Long artistId = Long.parseLong(id);
-
-        return userServiceImpl.getSalary(artistId);
+    @GetMapping("/salary")
+    public BigDecimal getSalary() {
+        return userServiceImpl.getSalary();
     }
 
     @PostMapping(value = "/upload-song", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

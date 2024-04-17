@@ -159,29 +159,32 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepo.deleteById(user.getId());
     }
 
+    public User findByEmail(String email) {
+        return userRepo.findByEmail(email);
+    }
+
     //Salary is count by formula: (total amount of listens) / 2 - 20%
     @Override
-    public BigDecimal getSalary(Long artistId) {
-
+    public BigDecimal getSalary() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userRepo.findByEmail(username);
+        User user = (User) authentication.getPrincipal();
+        String username = user.getEmail();
 
-        if (user.getArtist().getId().equals(artistId)) {
-            Artist artist = artistRepo.findArtistById(artistId);
+        Long artistId = artistRepo.getArtist(username);
+        Artist artist = artistRepo.findArtistById(artistId);
+        Long listening = songRepo.findTotalAmountOfListens(artist);
 
-            Long listening = songRepo.findTotalAmountOfListens(artist);
-
-            BigDecimal listeningAsBigDecimal = BigDecimal.valueOf(listening);
-            BigDecimal totalAmountInDollars = listeningAsBigDecimal.divide(BigDecimal.valueOf(2));
-            BigDecimal salary = totalAmountInDollars.subtract(COEFFICIENT);
-
-            artist.setSalary(salary);
-
-            return salary;
-        } else {
-            throw new RuntimeException("You can not see this info");
+        if (listening == null) {
+            return BigDecimal.valueOf(0);
         }
+
+        BigDecimal listeningAsBigDecimal = BigDecimal.valueOf(listening);
+        BigDecimal totalAmountInDollars = listeningAsBigDecimal.divide(BigDecimal.valueOf(2));
+        BigDecimal salary = totalAmountInDollars.subtract(COEFFICIENT);
+
+        artist.setSalary(salary);
+
+        return salary;
     }
 
     @Override

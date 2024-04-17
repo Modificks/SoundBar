@@ -69,7 +69,7 @@ public class PlayListServiceImp implements PlayListService {
         PlayList playList = playListRepo.findPlayListById(playListId);
         Song song = songRepo.findSongById(songId);
 
-        if (playList == null && song == null){
+        if (playList == null && song == null) {
             throw new RuntimeException("There are no such playList and song");
         } else {
             Set<Song> songsInPlayList = playList.getPlayListsMusic();
@@ -96,10 +96,12 @@ public class PlayListServiceImp implements PlayListService {
     @Override
     public List<PlayList> getAllPlayLists() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        User user = (User) authentication.getPrincipal();
+        String username = user.getEmail();
 
-        User user = userRepo.findByEmail(username);
-        Long userId = user.getId();
+        User user1 = userRepo.findByEmail(username);
+        Long userId = user1.getId();
+
         return playListRepo.findAllByUserId(userId);
     }
 }

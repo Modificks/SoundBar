@@ -122,12 +122,13 @@ public class SongServiceImpl implements SongService {
     @Override
     public SongStatisticDTO[] getSongStatistic(Long artistId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        User user = (User) authentication.getPrincipal();
+        String username = user.getEmail();
 
-        User user = userRepo.findByEmail(username);
+        User user1 = userRepo.findByEmail(username);
         Artist artist = artistRepo.findArtistById(artistId);
 
-        if (user.getArtist().getId().equals(artistId)) {
+        if (user1.getArtist().getId().equals(artistId)) {
             return summeryStatistic(artist);
         } else {
             throw new RuntimeException("You can not see this info");
