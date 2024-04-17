@@ -18,5 +18,5 @@ public interface UserService {
 
     void deleteUser(UserBaseDTO userBaseDTO);
 
-    BigDecimal getSalary(Long artistId);
+    BigDecimal getSalary();
 }

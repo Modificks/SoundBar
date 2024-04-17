@@ -8,7 +8,12 @@ import lombok.Setter;
 @Setter
 public class UserRegistrationDTO extends UserAuthDTO {
 
+//    @Nickname(message = "Invalid nickname")
+//    private String nickname;
+//    private Boolean isArtist;
     @Nickname(message = "Invalid nickname")
+    private String email;
     private String nickname;
+    private String password;
     private Boolean isArtist;
 }
