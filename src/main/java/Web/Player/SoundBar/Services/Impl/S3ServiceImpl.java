@@ -1,6 +1,7 @@
 package Web.Player.SoundBar.Services.Impl;
 
 import Web.Player.SoundBar.Configs.AwsConfig.AwsS3Properties;
+import Web.Player.SoundBar.Exceptions.FileProcessingException;
 import Web.Player.SoundBar.Services.S3Service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -51,8 +52,8 @@ public class S3ServiceImpl implements S3Service {
                     ByteArrayInputStream inputStream;
                     try {
                         inputStream = new ByteArrayInputStream(fileBytes.getBytes());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (IOException exception) {
+                        throw new FileProcessingException(exception.getMessage());
                     }
                     ObjectMetadata metadata = new ObjectMetadata();
 
@@ -79,7 +80,6 @@ public class S3ServiceImpl implements S3Service {
                 } catch (InterruptedException | ExecutionException exception) {
 
                     log.error("One of the thread ended with exception. Reason: {}", exception.getMessage());
-                    throw new RuntimeException(exception);
                 }
             });
 
@@ -94,8 +94,11 @@ public class S3ServiceImpl implements S3Service {
         return urls;
     }
 
-    public void deleteFileFromS3Bucket(String fileUrl) {
+    @Override
+    public void delete(String fileUrl) {
         String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-        amazonS3.deleteObject(new DeleteObjectRequest(awsS3Properties.getBucketName(), fileName));
+        amazonS3.deleteObject(new DeleteObjectRequest(
+                awsS3Properties.getBucketName(), fileName
+        ));
     }
 }

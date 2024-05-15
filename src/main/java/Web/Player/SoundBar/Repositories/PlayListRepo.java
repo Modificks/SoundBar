@@ -12,8 +12,6 @@ public interface PlayListRepo extends CrudRepository<PlayList, Long> {
 
     PlayList findByNameAndUser(String playListName, User user);
 
-    PlayList findPlayListById(Long playListId);
-
     Set<PlayList> findAll();
 
     Set<PlayList> findByUserId(Long userId);

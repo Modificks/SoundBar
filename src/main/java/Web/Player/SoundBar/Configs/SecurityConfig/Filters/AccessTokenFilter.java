@@ -1,17 +1,18 @@
 package Web.Player.SoundBar.Configs.SecurityConfig.Filters;
 
-
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProvider;
 import Web.Player.SoundBar.Domains.Entities.User;
+import Web.Player.SoundBar.Exceptions.TokenMissingException;
 import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class AccessTokenFilter extends OncePerRequestFilter {
+
     private final JwtProvider jwtHelper;
     private final UserServiceImpl userServiceImpl;
 
@@ -43,8 +45,8 @@ public class AccessTokenFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-        } catch (Exception e) {
-            log.warn("Cannot set authentication", e);
+        } catch (TokenMissingException exception) {
+            log.warn("Cannot set authentication", exception);
         }
 
         filterChain.doFilter(request, response);

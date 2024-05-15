@@ -1,9 +1,11 @@
 package Web.Player.SoundBar.Exceptions.Handlers;
 
+import Web.Player.SoundBar.Exceptions.RoleException;
 import Web.Player.SoundBar.Exceptions.TokenMissingException;
 import Web.Player.SoundBar.Exceptions.ObjectIsAlreadyExistException;
 import Web.Player.SoundBar.Formats.ResponseError;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,5 +47,17 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseError handleMissingObjectException(EntityNotFoundException ex) {
         return new ResponseError(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseError handleAccessDeniedException(AccessDeniedException ex) {
+        return new ResponseError(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(RoleException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError handleRoleException(RoleException ex) {
+        return new ResponseError(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

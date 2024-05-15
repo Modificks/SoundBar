@@ -1,11 +1,12 @@
 package Web.Player.SoundBar.Domains.Entities;
 
-import Web.Player.SoundBar.Enums.SongGenres;
+import Web.Player.SoundBar.Domains.Enums.SongGenres;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import javax.persistence.Column;
@@ -51,6 +52,7 @@ public class Song implements Serializable {
     private Artist artist;
 
     @ManyToMany(mappedBy = "playListsMusic", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<PlayList> playListsMusic;
 
     @Column(name = "listen_count")

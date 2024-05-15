@@ -1,15 +1,14 @@
 package Web.Player.SoundBar.Services.Impl;
 
-import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongBaseDTO;
-import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongDTO;
-import Web.Player.SoundBar.Domains.DTOs.SongDTOs.SongStatisticDTO;
+import Web.Player.SoundBar.Utils;
+import Web.Player.SoundBar.ViewLayers.DTOs.SongDTOs.SongDTO;
+import Web.Player.SoundBar.ViewLayers.DTOs.SongDTOs.SongStatisticDTO;
 import Web.Player.SoundBar.Domains.Entities.Artist;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
 import Web.Player.SoundBar.Domains.Entities.Song;
 import Web.Player.SoundBar.Domains.Entities.User;
-import Web.Player.SoundBar.Domains.Mapper.SongMapper;
-import Web.Player.SoundBar.Domains.Criterias.SongPage;
-import Web.Player.SoundBar.Domains.Criterias.SongSearchCriteria;
+import Web.Player.SoundBar.ViewLayers.Mapper.SongMapper;
+import Web.Player.SoundBar.ViewLayers.Criterias.SongSearchCriteria;
 import Web.Player.SoundBar.Repositories.ArtistRepo;
 import Web.Player.SoundBar.Repositories.Criterias.SongCriteriaRepo;
 import Web.Player.SoundBar.Repositories.PlayListRepo;
@@ -18,8 +17,8 @@ import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.SongService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
@@ -36,36 +35,35 @@ public class SongServiceImpl implements SongService {
     private final S3ServiceImpl s3ServiceImpl;
 
     private final SongRepo songRepo;
-
     private final ArtistRepo artistRepo;
-
     private final PlayListRepo playListRepo;
-
     private final UserRepo userRepo;
-
     private final SongCriteriaRepo songCriteriaRepo;
 
     private final SongMapper songMapper;
 
     @Override
-    public List<Song> addSong(List<SongDTO> listOfSongBaseDTO, List<MultipartFile> multipartFiles) {
+    public List<Song> addSong(List<SongDTO> listOfSongDTO, List<MultipartFile> multipartFiles) {
+        Long userId = Utils.getUserIdFromSecurityContext();
+
         List<String> urls = s3ServiceImpl.uploadFiles(multipartFiles);
 
         List<Song> songs = new ArrayList<>();
 
-        for (int i = 0; i < listOfSongBaseDTO.size(); i++) {
+        for (int i = 0; i < listOfSongDTO.size(); i++) {
 
-            SongDTO songBaseDTO = listOfSongBaseDTO.get(i);
+            SongDTO songDTO = listOfSongDTO.get(i);
             String url = urls.get(i);
-            String title = multipartFiles.get(i).getOriginalFilename().replace(".mp3", "");
 
-            Artist artist = artistRepo.findArtistById(songBaseDTO.getArtistId());
-            Song song = songMapper.toEntity(songBaseDTO);
+            String title = songDTO.getTitle();
+
+            Artist artist = artistRepo.getArtist(userId);
+            Song song = songMapper.toEntity(songDTO);
 
             song.setTitle(title);
             song.setUrl(url);
             song.setArtist(artist);
-            song.setGenre(songBaseDTO.getGenre());
+            song.setGenre(songDTO.getGenre());
             song.setListenCount(0L);
             songs.add(song);
         }
@@ -73,29 +71,54 @@ public class SongServiceImpl implements SongService {
         return (List<Song>) songRepo.saveAll(songs);
     }
 
-    public void deleteSong(SongBaseDTO songBaseDTO) {
-        Song song = songRepo.findSongById(songBaseDTO.getId());
+    @Override
+    public void delete(Long songId) {
+        Song song = songRepo.findById(songId)
+                .orElseThrow(EntityNotFoundException::new);
+
         Set<PlayList> playLists = playListRepo.findAll();
 
-        if (song == null) {
-            throw new EntityNotFoundException("Can not find this song");
-        } else {
+        Set<Song> songsInPlayList = playLists.stream()
+                .flatMap(playList -> playList.getPlayListsMusic().stream())
+                .collect(Collectors.toSet());
 
-            Set<Song> songsInPlayList = playLists.stream()
-                    .flatMap(playList -> playList.getPlayListsMusic().stream())
-                    .collect(Collectors.toSet());
+        if (songsInPlayList.contains(song)) {
+            songsInPlayList.remove(song);
 
-            if (songsInPlayList.contains(song)) {
-                songsInPlayList.remove(song);
-
-                playLists.forEach(playList -> {
-                    playList.setPlayListsMusic(songsInPlayList);
-                    playListRepo.save(playList);
-                });
-            }
-            s3ServiceImpl.deleteFileFromS3Bucket(songBaseDTO.getUrl());
-            songRepo.delete(song);
+            playLists.forEach(playList -> {
+                playList.setPlayListsMusic(songsInPlayList);
+                playListRepo.save(playList);
+            });
         }
+        s3ServiceImpl.delete(song.getUrl());
+
+        songRepo.delete(song);
+    }
+
+    @Override
+    public void removeSongFromPlayList(Long playListId, Long songId) {
+        PlayList playList = playListRepo.findById(playListId)
+                .orElseThrow(EntityNotFoundException::new);
+        Song song = songRepo.findById(songId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        Set<Song> songsInPlayList = playList.getPlayListsMusic();
+        if (songsInPlayList.contains(song)) {
+            songsInPlayList.remove(song);
+            playList.setPlayListsMusic(songsInPlayList);
+            playListRepo.save(playList);
+        }
+    }
+
+    @Override
+    public void addSongToPlayList(Long playListId, Long songId) {
+        PlayList playList = playListRepo.findById(playListId)
+                .orElseThrow(EntityNotFoundException::new);
+        Song song = songRepo.findById(songId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        playList.getPlayListsMusic().add(song);
+        playListRepo.save(playList);
     }
 
     @Override
@@ -104,12 +127,14 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public Page<Song> getSongs(SongPage songPage, SongSearchCriteria songSearchCriteria) {
-        return songCriteriaRepo.findAllWithFilters(songPage, songSearchCriteria);
+    public Page<Song> getSongs(SongSearchCriteria songSearchCriteria, Pageable songPage) {
+        return songCriteriaRepo.findAllWithFilters(songSearchCriteria, songPage);
     }
 
+    @Override
     public Song listenToSong(Long songId) {
-        Song song = songRepo.findSongById(songId);
+        Song song = songRepo.findById(songId)
+                .orElseThrow(EntityNotFoundException::new);
 
         Long listenCount = song.getListenCount();
         listenCount++;
@@ -121,17 +146,18 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public SongStatisticDTO[] getSongStatistic(Long artistId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        String username = user.getEmail();
+        Long userId = Utils.getUserIdFromSecurityContext();
 
-        User user1 = userRepo.findByEmail(username);
-        Artist artist = artistRepo.findArtistById(artistId);
+        User findUser = userRepo.findById(userId)
+                .orElseThrow(EntityNotFoundException::new);
 
-        if (user1.getArtist().getId().equals(artistId)) {
+        Artist artist = artistRepo.findById(artistId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        if (findUser.getArtist().getId().equals(artistId)) {
             return summeryStatistic(artist);
         } else {
-            throw new RuntimeException("You can not see this info");
+            throw new AccessDeniedException("You can not see this info");
         }
     }
 

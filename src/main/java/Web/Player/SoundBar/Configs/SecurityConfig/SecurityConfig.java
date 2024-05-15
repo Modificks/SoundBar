@@ -56,11 +56,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/SoundBar", "/SoundBar/login", "/SoundBar/logout", "/SoundBar/logout-all", "/SoundBar/registration", "/SoundBar/refresh-token").permitAll()
-
-                .antMatchers("/SoundBar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN", "SUPER_ADMIN")
-                .antMatchers("SoundBar/artist/**").hasAnyAuthority("ARTIST")
-                .antMatchers("/SoundBar/admin/**").hasAnyAuthority("ADMIN")
+                .authorizeRequests().antMatchers("/sound-bar", "/sound-bar/login", "/sound-bar/registration", "/sound-bar/refresh-token").permitAll()
+                .antMatchers("/sound-bar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN")
+                .antMatchers("sound-bar/artist/**").hasAnyAuthority("ARTIST")
+                .antMatchers("/sound-bar/admin/**").hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated();
 
         http.addFilterBefore(accessTokenFilter(), UsernamePasswordAuthenticationFilter.class);

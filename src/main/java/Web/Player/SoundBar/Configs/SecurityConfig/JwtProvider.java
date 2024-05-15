@@ -88,8 +88,8 @@ public class JwtProvider {
     private Optional<DecodedJWT> decodedAccessToken(String token) {
         try {
             return Optional.of(accessTokenVerifier.verify(token));
-        } catch (JWTVerificationException e) {
-            log.warn("Invalid access token: ", e);
+        } catch (JWTVerificationException exception) {
+            log.warn("Invalid access token: ", exception);
         }
         return Optional.empty();
     }
@@ -97,8 +97,8 @@ public class JwtProvider {
     private Optional<DecodedJWT> decodedRefreshToken(String token) {
         try {
             return Optional.of(refreshTokenVerifier.verify(token));
-        } catch (JWTVerificationException e) {
-            log.warn("Invalid refresh token: ", e);
+        } catch (JWTVerificationException exception) {
+            log.warn("Invalid refresh token: ", exception);
         }
         return Optional.empty();
     }
