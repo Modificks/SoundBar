@@ -1,11 +1,12 @@
 package Web.Player.SoundBar.Services.Impl;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProvider;
-import Web.Player.SoundBar.Domains.DTOs.TokenDTO;
+import Web.Player.SoundBar.ViewLayers.DTOs.TokenDTO;
 import Web.Player.SoundBar.Domains.Entities.RefreshToken;
 import Web.Player.SoundBar.Domains.Entities.User;
 import Web.Player.SoundBar.Formats.DateFormatter;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
+import Web.Player.SoundBar.Services.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +17,13 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RefreshTokenServiceImpl {
+public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final JwtProvider jwtProvider;
 
     private final RefreshTokenRepo refreshTokenRepo;
 
+    @Override
     public TokenDTO generateTokens(User user) {
         String accessToken = jwtProvider.generateAccessToken(user);
         String refreshTokenString = jwtProvider.generateRefreshToken(user);

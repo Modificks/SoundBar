@@ -1,16 +1,14 @@
 package Web.Player.SoundBar.APIs.UserController;
 
 import Web.Player.SoundBar.Configs.SecurityConfig.JwtProvider;
-import Web.Player.SoundBar.Domains.DTOs.TokenDTO;
-import Web.Player.SoundBar.Domains.DTOs.UserDTOs.LoginDTO;
-import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserRegistrationDTO;
 import Web.Player.SoundBar.Domains.Entities.RefreshToken;
 import Web.Player.SoundBar.Domains.Entities.User;
-import Web.Player.SoundBar.Domains.Mapper.UserMapper;
 import Web.Player.SoundBar.Repositories.RefreshTokenRepo;
-import Web.Player.SoundBar.Repositories.UserRepo;
-import Web.Player.SoundBar.Services.Impl.RefreshTokenServiceImpl;
-import Web.Player.SoundBar.Services.Impl.UserServiceImpl;
+import Web.Player.SoundBar.Services.RefreshTokenService;
+import Web.Player.SoundBar.Services.UserService;
+import Web.Player.SoundBar.ViewLayers.DTOs.TokenDTO;
+import Web.Player.SoundBar.ViewLayers.DTOs.UserDTOs.LoginDTO;
+import Web.Player.SoundBar.ViewLayers.DTOs.UserDTOs.UserRegistrationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,12 +21,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 
 @Validated
 @RestController
 @Transactional
-@RequestMapping("/SoundBar")
+@RequestMapping("/sound-bar")
 @RequiredArgsConstructor
 public class UserAuthController {
 
@@ -36,19 +35,14 @@ public class UserAuthController {
 
     private final JwtProvider jwtProvider;
 
-    private final UserRepo userRepo;
-
-    private final UserMapper userMapper;
-
     private final RefreshTokenRepo refreshTokenRepo;
 
-    private final UserServiceImpl userServiceImpl;
-
-    private final RefreshTokenServiceImpl refreshTokenServiceImpl;
+    private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/registration")
     public String registration(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) {
-        userServiceImpl.saveUser(userMapper.toEntity(userRegistrationDTO), userRegistrationDTO.getIsArtist());
+        userService.register(userRegistrationDTO, userRegistrationDTO.getIsArtist());
 
         return "Click on login";
     }
@@ -63,14 +57,12 @@ public class UserAuthController {
 
         org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
-        User existingUser = userRepo.findByEmail(user.getUsername());
+        User userEnt = userService.findByEmail(user.getUsername());
 
-        return refreshTokenServiceImpl.generateTokens(existingUser);
+        return refreshTokenService.generateTokens(userEnt);
     }
 
-
-
-    @PostMapping("/logout")
+    @PostMapping("/player/logout")
     public String logout(@RequestBody TokenDTO tokenDTO) {
         String refreshTokenString = tokenDTO.getRefreshToken();
 
@@ -85,7 +77,7 @@ public class UserAuthController {
         throw new BadCredentialsException("invalid token");
     }
 
-    @PostMapping("/logout-all")
+    @PostMapping("/player/logout-all")
     public String logoutAll(@RequestBody TokenDTO tokenDTO) {
         String refreshTokenString = tokenDTO.getRefreshToken();
 
@@ -111,9 +103,9 @@ public class UserAuthController {
 
             refreshTokenRepo.delete(refreshToken);
 
-            User userEnt = userRepo.findByEmail(jwtProvider.getUserIdFromRefreshToken(refreshTokenString));
+            User userEnt = userService.findByEmail(jwtProvider.getUserIdFromRefreshToken(refreshTokenString));
 
-            return refreshTokenServiceImpl.generateTokens(userEnt);
+            return refreshTokenService.generateTokens(userEnt);
         }
         throw new BadCredentialsException("Bad credits");
     }

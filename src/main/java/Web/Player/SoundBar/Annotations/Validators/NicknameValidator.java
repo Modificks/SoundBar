@@ -1,6 +1,7 @@
 package Web.Player.SoundBar.Annotations.Validators;
 
 import Web.Player.SoundBar.Annotations.Nickname;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

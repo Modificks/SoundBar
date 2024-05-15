@@ -9,10 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ArtistRepo extends CrudRepository<Artist, Long> {
 
-    Artist findArtistById(Long artistId);
-
-    @Query(value = "SELECT a.id FROM Artist a " +
+    @Query(value = "SELECT a FROM Artist a " +
             "INNER JOIN a.user u " +
-            "WHERE u.email = :email")
-    Long getArtist(@Param("email") String email);
+            "WHERE u.id = :id")
+    Artist getArtist(@Param("id") Long id);
 }

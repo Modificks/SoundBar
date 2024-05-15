@@ -1,22 +1,19 @@
 package Web.Player.SoundBar.Services.Impl;
 
-import Web.Player.SoundBar.Domains.DTOs.PlayListDTOs.PlayListDTO;
+import Web.Player.SoundBar.Utils;
+import Web.Player.SoundBar.ViewLayers.DTOs.PlayListDTO;
 import Web.Player.SoundBar.Domains.Entities.PlayList;
-import Web.Player.SoundBar.Domains.Entities.Song;
 import Web.Player.SoundBar.Domains.Entities.User;
-import Web.Player.SoundBar.Domains.Mapper.PlayListMapper;
+import Web.Player.SoundBar.ViewLayers.Mapper.PlayListMapper;
 import Web.Player.SoundBar.Exceptions.ObjectIsAlreadyExistException;
 import Web.Player.SoundBar.Repositories.PlayListRepo;
-import Web.Player.SoundBar.Repositories.SongRepo;
 import Web.Player.SoundBar.Repositories.UserRepo;
 import Web.Player.SoundBar.Services.PlayListService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,17 +21,16 @@ import java.util.Set;
 public class PlayListServiceImp implements PlayListService {
 
     private final PlayListRepo playListRepo;
-
     private final UserRepo userRepo;
-
-    private final SongRepo songRepo;
 
     private final PlayListMapper playListMapper;
 
     @Override
     public PlayList createPlayList(PlayListDTO playListDTO) {
+        Long userId = Utils.getUserIdFromSecurityContext();
 
-        User user = userRepo.findUserById(playListDTO.getUserBaseDTO().getId());
+        User user = userRepo.findById(userId)
+                .orElseThrow(EntityNotFoundException::new);
 
         if (playListRepo.findByNameAndUser(playListDTO.getName(), user) != null) {
             throw new ObjectIsAlreadyExistException("Play list with this name is already exists for this user");
@@ -49,14 +45,19 @@ public class PlayListServiceImp implements PlayListService {
     }
 
     @Override
-    public void deletePlayList(PlayListDTO playListDTO) {
+    public void delete(Long playListId) {
+        Long userId = Utils.getUserIdFromSecurityContext();
 
-        User user = userRepo.findUserById(playListDTO.getUserBaseDTO().getId());
+        User findUser = userRepo.findById(userId)
+                .orElseThrow(EntityNotFoundException::new);
 
-        PlayList existingPlayList = playListRepo.findByNameAndUser(playListDTO.getName(), user);
+        PlayList playList = playListRepo.findById(playListId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        PlayList existingPlayList = playListRepo.findByNameAndUser(playList.getName(), findUser);
 
         if (existingPlayList == null) {
-            throw new ObjectIsAlreadyExistException("There is no play list with such name");
+            throw new EntityNotFoundException("There is no play list with such name");
         }
 
         existingPlayList.getPlayListsMusic().clear();
@@ -64,43 +65,9 @@ public class PlayListServiceImp implements PlayListService {
         playListRepo.delete(existingPlayList);
     }
 
-    public void removeSongFromPlayList(Long playListId, Long songId) {
-
-        PlayList playList = playListRepo.findPlayListById(playListId);
-        Song song = songRepo.findSongById(songId);
-
-        if (playList == null && song == null) {
-            throw new RuntimeException("There are no such playList and song");
-        } else {
-            Set<Song> songsInPlayList = playList.getPlayListsMusic();
-            if (songsInPlayList.contains(song)) {
-                songsInPlayList.remove(song);
-                playList.setPlayListsMusic(songsInPlayList);
-                playListRepo.save(playList);
-            }
-        }
-    }
-
-    @Override
-    public void addSongToPlayList(Long playListId, Long songId) {
-
-        PlayList playList = playListRepo.findPlayListById(playListId);
-        Song song = songRepo.findSongById(songId);
-
-        if (playList != null && song != null) {
-            playList.getPlayListsMusic().add(song);
-            playListRepo.save(playList);
-        }
-    }
-
     @Override
     public List<PlayList> getAllPlayLists() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        String username = user.getEmail();
-
-        User user1 = userRepo.findByEmail(username);
-        Long userId = user1.getId();
+        Long userId = Utils.getUserIdFromSecurityContext();
 
         return playListRepo.findAllByUserId(userId);
     }

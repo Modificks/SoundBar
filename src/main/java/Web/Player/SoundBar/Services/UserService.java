@@ -1,22 +1,19 @@
 package Web.Player.SoundBar.Services;
 
-import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserBaseDTO;
-import Web.Player.SoundBar.Domains.DTOs.UserDTOs.UserFindDTO;
+import Web.Player.SoundBar.ViewLayers.DTOs.UserDTOs.UserRegistrationDTO;
 import Web.Player.SoundBar.Domains.Entities.User;
 import java.math.BigDecimal;
 import java.util.Set;
 
-public interface UserService {
+public interface UserService extends GeneralInterface<Long> {
 
-    User saveUser(User user, boolean isArtist);
+    User register(UserRegistrationDTO userRegistrationDTO, boolean isArtist);
 
-    User getUser(String email);
+    Set<User> getAllUsers();
 
-    Set<UserFindDTO> getAllUsers();
-
-    void changeUserRole(Long userId, Long roleId, boolean addRole);
-
-    void deleteUser(UserBaseDTO userBaseDTO);
+    void addRole(Long userId, Long roleId, boolean addRole);
 
     BigDecimal getSalary();
+
+    User findByEmail(String email);
 }
