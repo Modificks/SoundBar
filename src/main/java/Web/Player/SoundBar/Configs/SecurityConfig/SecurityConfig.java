@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/sound-bar", "/sound-bar/login", "/sound-bar/registration", "/sound-bar/refresh-token").permitAll()
+                .authorizeRequests().antMatchers("/api-docs/**", "/swagger-ui/**", "/sound-bar", "/sound-bar/login", "/sound-bar/registration", "/sound-bar/refresh-token").permitAll()
                 .antMatchers("/sound-bar/player/**").hasAnyAuthority("USER", "ARTIST", "ADMIN")
                 .antMatchers("sound-bar/artist/**").hasAnyAuthority("ARTIST")
                 .antMatchers("/sound-bar/admin/**").hasAnyAuthority("ADMIN")
